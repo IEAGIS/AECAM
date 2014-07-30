@@ -1,0 +1,796 @@
+﻿<DOCTYPE HTML>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9" />
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
+        <title>AECAM</title>
+        <link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dijit/themes/claro/claro.css">
+		<link rel="stylesheet" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
+		<link rel="stylesheet" href="Content/css/style.css"/>
+        <link rel="shortcut icon" href="favicon.ico"/>
+        <style type="text/css">
+            html, body {
+                height: 100%;
+                width: 100%;
+                margin: 0;
+                padding: 0px;
+                font-family: helvetica, arial, sans-serif;
+                font-size: 90%;
+            }
+            
+            .esriScalebar{padding: 20px 20px; }
+			
+            #leftPane {
+                width: 280px;
+                overflow: auto
+            }
+            /* this line hide layers when out of scale for the inline TOC */
+            #scaleDiv .agsTOCOutOfScale {
+                display: none;
+            }
+			.esriPrint{
+				height:20px;
+				float: left;
+				padding: 0px;
+			}
+			.esriPrintout{
+			  color:#3D5229;
+			  text-decoration:none;
+			}
+			.floatTop{
+				z-index: 9999;
+			}
+			/*Grid needs an explicit height by default*/
+            #gridDiv {
+                height: 20em;
+            }
+
+        </style>
+        <script type="text/javascript">
+           var djConfig = {
+              paths: {
+                agsjs: location.pathname.replace(/\/[^/]+$/, "")+'/agsjs/build/agsjs'
+              }
+            };
+        </script>
+        <!--script type="text/javascript" src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3/">        </script -->
+		<script src="http://js.arcgis.com/3.8/"></script>
+
+        <script type="text/javascript">
+            var map, symbol, graphic, previousLayer = 0;  //identity
+            var identifyTask, identifyParams, initialExtent, aecam, mtitle, grid, toc;  //identity
+            var demoArrays = [12, 19, 26, 33, 40, 47, 54, 60, 67, 74, 81];
+
+            require(["dojo/_base/connect",
+					 "dojo/dom", "dojo/parser", "dojo/on", "dojo/_base/Color",
+					 "dojo/data/ItemFileReadStore",
+
+					"esri/map", "esri/geometry/Extent",
+					"esri/layers/FeatureLayer", "esri/layers/ArcGISDynamicMapServiceLayer",
+					"esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol", "esri/symbols/SimpleMarkerSymbol",
+					"esri/renderers/ClassBreaksRenderer", "esri/dijit/Popup", "esri/toolbars/navigation",
+					"esri/dijit/Print", "esri/InfoTemplate",
+
+					"esri/tasks/QueryTask", "esri/tasks/query",
+					"esri/tasks/FindTask", "esri/tasks/FindParameters",
+					"esri/tasks/IdentifyTask", "esri/tasks/IdentifyParameters",
+					"esri/SpatialReference", "esri/graphic",
+					"esri/tasks/PrintTemplate",
+
+					"agsjs/dijit/TOC", "dijit/form/CheckBox",
+					"dijit/form/Button", "dijit/form/Select",
+					"dijit/Dialog", "dijit/form/TextBox",
+					"dijit/layout/AccordionContainer",
+					"dojox/grid/DataGrid",
+
+					 "dijit/layout/BorderContainer",
+					 "dijit/layout/ContentPane",
+					 "dojo/fx", "dojo/domReady!"],
+		 function (connect, dom, parser, on, Color,
+					ItemFileReadStore,
+
+					Map, Extent,
+					FeatureLayer, ArcGISDynamicMapServiceLayer,
+					SimpleFillSymbol, SimpleLineSymbol, SimpleMarkerSymbol,
+					ClassBreaksRenderer, Popup, Navigation,
+					Print, InfoTemplate,
+
+					QueryTask, query,
+					FindTask, FindParameters,
+					IdentifyTask, IdentifyParameters,
+					SpatialReference, Graphic, PrintTemplate,
+
+					TOC, CheckBox,
+					Button, Select,
+					Dialog, TextBox,
+					AccordionContainer,
+					DataGrid) {
+
+		     parser.parse(); // note djConfig.parseOnLoad = false;
+
+		     dojo.connect(grid, "onRowClick", onRowClickHandler);
+		     //identify setup the popup window 
+		     var popup = new Popup({
+		         fillSymbol: new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([255, 0, 0]), 2), new Color([255, 255, 0, 0.25]))
+		     }, dojo.create("div"));
+
+		     initialExtent = new Extent(173394.2521390929, 3642298.04377402, 987818.4325118694, 4065555.1767404266, new SpatialReference({
+		         wkid: 26915
+		     }));
+
+		     map = new Map("map", {
+		         extent: initialExtent,
+		         logo: false,
+		         zoom: 8,
+		         infoWindow: popup
+		     });
+
+
+		     aecam = new ArcGISDynamicMapServiceLayer("http://argis.ualr.edu/ieagis/rest/services/AECAM_MAP_COLLAPSE/MapServer", {
+		         id: 'aecam',
+		         opacity: 0.8
+		     });
+
+		     map.on("load", function () {
+		         navToolbar = new Navigation(map);
+		         createPrintDijit(dojo.byId('map_name').value);
+		         aecam.setVisibleLayers([5, 88]);
+		         toc = new TOC({
+		             map: map,
+		             layerInfos: [{
+		                 layer: aecam,
+		                 title: "AECAM"
+		             }]
+		         }, 'tocDiv');
+		         toc.startup();
+		         toc.on('load', function () {
+		             if (console)
+		                 console.log('TOC loaded');
+
+		             toc.on('toc-node-checked', function (evt) {
+		                 // when check on one layer, turn off everything else on the public safety service.
+		                 //if (evt.checked && evt.rootLayer && evt.serviceLayer && evt.rootLayer == dynaLayer1){
+		                 if (evt.serviceLayer.id >= 12 && evt.serviceLayer.id <= 88) {
+		                     if (evt.rootLayer && evt.serviceLayer && evt.rootLayer == aecam) {
+		                         //if(evt.serviceLayer.id === 12)
+		                         //alert(dojo.indexOf(demoArrays,evt.serviceLayer.id));
+		                         if (dojo.indexOf(demoArrays, evt.serviceLayer.id) !== -1)
+		                             evt.rootLayer.setVisibleLayers([5, 88]);
+		                         else {
+		                             //alert(evt.checked);
+		                             if (evt.checked === true) {
+		                                 //alert('ttt');
+		                                 if (previousLayer != evt.serviceLayer.id)
+		                                     toc.findTOCNode(aecam, previousLayer).collapse();
+		                                 evt.rootLayer.setVisibleLayers([evt.serviceLayer.id]);
+		                                 previousLayer = evt.serviceLayer.id;
+		                             } else {
+		                                 //alert('fff');
+		                                 evt.rootLayer.setVisibleLayers([5, 88]);
+		                             }
+		                         }
+		                     }
+		                 }
+		                 if (console) {
+		                     console.log("TOCNodeChecked, rootLayer:"
+										+ (evt.rootLayer ? evt.rootLayer.id : 'NULL')
+										+ ", serviceLayer:" + (evt.serviceLayer ? evt.serviceLayer.id : 'NULL')
+										+ " Checked:" + evt.checked);
+		                 }
+		             });
+		         });
+		         identifyTask = new IdentifyTask("http://argis.ualr.edu/ieagis/rest/services/AECAM_MAP/MapServer");
+
+		         identifyParams = new IdentifyParameters();
+		         identifyParams.tolerance = 10;
+		         identifyParams.returnGeometry = true;
+		         identifyParams.width = map.width;
+		         identifyParams.height = map.height;
+		         //identifyParams.layerIds = map._layers.aecam.visibleLayers; //[4, 87];
+
+		         map._layers.aecam.setVisibleLayers([5, 88]);
+		         //identifyParams.layerIds = map._layers.aecam.visibleLayers;
+
+		         //Create Find Task using Post code layer
+		         findTask = new FindTask("http://argis.ualr.edu/ieagis/rest/services/AECAM_MAP/MapServer");
+		         //Create the find parameters
+		         findParams = new FindParameters();
+		         findParams.returnGeometry = true;
+		         findParams.outSpatialReference = map.spatialReference;
+
+		     });
+		     function doFind() {
+
+		         //var visLayer = ["SNP", "ABC", "CCF", "HS"];
+		         var visLayer = ["BB", "SNP", "ABC", "CCF", "HS", "ROAD", "Senate_Dis", "House_Dist", "Cong_Distr", "ARC_Zip", "School_Dis", "ARC_City"];
+		         //Set the search text to the value in the box
+		         var srchfield = dojo.byId("fieldval").value;
+		         var position = dojo.lastIndexOf(visLayer, srchfield);
+
+		         findParams.searchFields = [srchfield];
+		         var lid = dojo.byId("program").value;
+		         findParams.layerIds = [lid];
+		         findParams.contains = false;
+		         map._layers.aecam.setVisibleLayers([lid, 5, position, 88]);
+		         identifyParams.layerIds = [lid];
+		         findParams.searchText = dojo.byId("name").value.toUpperCase();
+		         findTask.execute(findParams, showResults, errorSrch);
+		     }
+		     function showResults(results) {
+
+		         if (results.length == 0) {
+		             alert('No results found. Please try again.');
+		             resetMap();
+		             return false;
+		         } else {
+		             selectTab('srchResults');
+		             dojo.byId('rec_count').innerHTML = results.length + ' records found.';
+		         }
+		         map.graphics.clear();
+		         var symbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 10,
+							new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+							new Color([0, 0, 0]), 1),
+							new Color([255, 255, 0, 1]));
+
+		         var items = dojo.map(results, function (result) {
+		             var graphic = new Graphic(result.feature.toJson());
+		             //var graphic = result.feature;
+		             graphic.setSymbol(symbol);
+		             map.graphics.add(graphic);
+		             return result.feature.attributes;
+		         });
+
+		         var maxx = 0;
+		         var maxy = 0;
+		         var miny, minx;
+		         for (var i = 0, il = map.graphics.graphics.length; i < il; i++) {
+		             var currentGraphic = map.graphics.graphics[i];
+		             if (i == 0) {
+		                 minx = currentGraphic.geometry.x;
+		                 miny = currentGraphic.geometry.y;
+		             } else {
+		                 if (currentGraphic.geometry.x < minx)
+		                     minx = currentGraphic.geometry.x;
+		                 if (currentGraphic.geometry.y < miny)
+		                     miny = currentGraphic.geometry.y;
+		             }
+		             if (currentGraphic.geometry.x > maxx)
+		                 maxx = currentGraphic.geometry.x;
+		             if (currentGraphic.geometry.y > maxy)
+		                 maxy = currentGraphic.geometry.y;
+		         }
+
+		         extent = pointToExtent(map, maxx, maxy, minx, miny, 10)
+		         map.setExtent(extent);
+
+		         //Create data object to be used in store
+		         var data = {
+		             identifier: "OBJECTID",  //This field needs to have unique values
+		             label: "OBJECTID", //Name field for display. Not pertinent to a grid but may be used elsewhere.
+		             items: items
+		         };
+
+		         //Create data store and bind to grid.
+		         store = new ItemFileReadStore({ data: data });
+		         grid = dijit.byId('grid');
+		         grid.setStore(store);
+
+		         grid.layout.setColumnVisibility(0, false);
+		         dijit.byId('btnPrint').set('disabled', '');
+		     }
+		     function pointToExtent(map, pointX, pointY, minX, minY, toleranceInPixel) {
+		         var pixelWidth = map.extent.getWidth() / map.width;
+		         var toleraceInMapCoords = toleranceInPixel * pixelWidth;
+		         return new Extent(minX - toleraceInMapCoords,
+										minY - toleraceInMapCoords,
+										pointX + toleraceInMapCoords,
+										pointY + toleraceInMapCoords,
+										map.spatialReference);
+		     }
+		     function createPrintDijit(printTitle) {
+		         var layoutTemplate, templateNames, mapOnlyIndex, templates;
+
+		         // create an array of objects that will be used to create print templates
+		         var layouts = [
+							  {
+							      "name": "Letter ANSI A Landscape",
+							      "label": "Landscape (PDF)",
+							      "format": "pdf",
+							      "options": {
+							          "legendLayers": [], // empty array means no legend
+							          "scalebarUnit": "Miles",
+							          "titleText": printTitle + ", Landscape PDF"
+							      }
+							  }, {
+							      "name": "Letter ANSI A Portrait",
+							      "label": "Portrait (Image)",
+							      "format": "jpg",
+							      "options": {
+							          "legendLayers": [],
+							          "scaleBarUnit": "Miles",
+							          "titleText": printTitle + ", Portrait JPG"
+							      }
+							  }, {
+							      label: "Map Only (PNG)",
+							      format: "PNG32",
+							      layout: "MAP_ONLY",
+							      preserveScale: false,
+							      exportOptions: {
+							          width: 1024,
+							          height: 768,
+							          dpi: 96
+							      }
+							  }
+							];
+
+		         // create the print templates, could also use dojo.map
+		         var templates = [];
+		         dojo.forEach(layouts, function (lo) {
+		             var t = new PrintTemplate();
+		             t.layout = lo.name;
+		             t.label = lo.label;
+		             t.format = lo.format;
+		             t.layoutOptions = lo.options
+		             templates.push(t);
+		         });
+
+		         printer = new Print({
+		             "map": map,
+		             "templates": templates,
+		             "asynch": false,
+		             url: "http://argis.ualr.edu/ieagis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task"
+		         }, dojo.byId("printButton"));
+		         printer.startup();
+
+		         dojo.connect(printer, "onPrintStart", function () {
+		             this.templates[0].layoutOptions.titleText = dojo.byId("map_name").value;
+		         });
+		     }
+		     function resetMap() {
+		         clearGrid();
+		         selectTab('accToc');
+		         dijit.byId('btnPrint').set('disabled', 'disbaled');
+		         dojo.byId('rec_count').innerHTML = "";
+		         dojo.byId('map_name').value = "AECAM";
+		         map.setExtent(initialExtent);
+		         map.graphics.clear();
+		         map._layers.aecam.setVisibleLayers([5, 88]);
+		         identifyParams.layerIds = map._layers.aecam.visibleLayers;
+		     }
+		     function clearGrid() {
+		         var newStore = new ItemFileReadStore({ data: { identifier: "", items: []} });
+		         var grid = dijit.byId("grid");
+		         grid.setStore(newStore);
+		     }
+		     map.addLayers([aecam]);
+
+		     //debug
+		     //dojo.connect(map,"onClick",layerList);
+		     dojo.connect(map, "onClick", executeIdentifyTask);
+		     dojo.connect(searchButton, "onclick", setPrintTitle);
+		     dojo.connect(searchButton, "onclick", doFind);
+		     dojo.connect(resetBtn_label, "onclick", resetMap);
+		     dijit.byId('btnPrint').set('disabled', 'disbaled');
+
+		 });
+
+            //Zoom to the parcel when the user clicks a row
+            function onRowClickHandler(evt) {
+                var clickedId = grid.getItem(evt.rowIndex).OBJECTID;
+                var selectedPoint;
+
+                dojo.forEach(map.graphics.graphics, function (graphic) {
+                    if ((graphic.attributes) && graphic.attributes.OBJECTID === clickedId[0]) {
+                        selectedPoint = graphic;
+                        return;
+                    }
+                });
+                var pointExtent = selectedPoint._extent;
+
+                //map.setExtent(pointExtent);
+                executeIdentifyTask(selectedPoint)
+
+            }
+
+            function setPrintTitle() {
+                //alert(document.getElementById('program').options[document.getElementById('program').selectedIndex].text);
+                var searchArea = document.getElementById('program');
+                var searchField = document.getElementById('fieldval');
+                var searchVal = dojo.byId('name').value;
+
+                var searchString = searchArea.options[searchArea.selectedIndex].text + " by " + searchField.options[searchField.selectedIndex].text + " : " + searchVal;
+
+                dojo.byId('map_name').value = searchString;
+            }
+            function handleError(err) {
+                console.log("Something broke: ", err);
+            }
+            //identify
+            function executeIdentifyTask(evt) {
+                if (evt.mapPoint) {
+                    identifyParams.geometry = evt.mapPoint;
+                } else {
+                    identifyParams.geometry = evt.geometry;
+                }
+                identifyParams.mapExtent = map.extent;
+                identifyParams.layerIds = map._layers.aecam.visibleLayers;
+
+                var deferred = identifyTask.execute(identifyParams);
+
+                deferred.addCallback(function (response) {
+                    // response is an array of identify result objects    
+                    // Let's return an array of features.
+                    return dojo.map(response, function (result) {
+                        var feature = result.feature;
+                        feature.attributes.layerName = result.layerName;
+                        var template = new esri.InfoTemplate();
+                        template.setTitle(feature.attributes.layerName);
+                        //alert(result.layerName);
+                        switch (result.layerName) {
+                            case 'Better_Beginnings':
+                                template.setContent(getBBContent);
+                                feature.setInfoTemplate(template);
+                                break;
+                            case 'Special Nutrition Programs':
+                                template.setContent(getSNPContent);
+                                feature.setInfoTemplate(template);
+                                break;
+                            case 'Arkansas Better Chance Programs':
+                                template.setContent(getABCContent);
+                                feature.setInfoTemplate(template);
+                                break;
+                            case 'ChildCare Facilities':
+                                template.setContent(getCCFContent);
+                                feature.setInfoTemplate(template);
+                                break;
+                            case 'Head_Start':
+                                template.setContent(getHSContent);
+                                feature.setInfoTemplate(template);
+                                break;
+                            case 'House District':
+                                template.setContent(getHouseContent);
+                                feature.setInfoTemplate(template);
+                                break;
+                            case 'Congressional_District':
+                                template.setContent(getCongContent);
+                                feature.setInfoTemplate(template);
+                                break;
+                            case 'Senate District':
+                                template.setContent(getSenateContent);
+                                feature.setInfoTemplate(template);
+                                break;
+                            case 'County':
+                                template.setContent(getCountyContent);
+                                feature.setInfoTemplate(template);
+                                break;
+                            case 'Road':
+                                template.setContent(getRoadContent);
+                                feature.setInfoTemplate(template);
+                                break;
+                            case 'City':
+                                template.setContent(getCityContent);
+                                feature.setInfoTemplate(template);
+                                break;
+                            case 'Zip Code':
+                                template.setContent(getZipContent);
+                                feature.setInfoTemplate(template);
+                                break;
+                            case 'School District':
+                                template.setContent(getSchoolDistContent);
+                                feature.setInfoTemplate(template);
+                                break;
+                            default:
+                                return false;
+                        }
+                        return feature;
+                    });
+                });
+
+
+                // InfoWindow expects an array of features from each deferred
+                // object that you pass. If the response from the task execution 
+                // above is not an array of features, then you need to add a callback
+                // like the one above to post-process the response and return an
+                // array of features.
+                map.infoWindow.setFeatures([deferred]);
+                if (evt.mapPoint) {
+                    map.infoWindow.show(evt.mapPoint);
+                } else {
+                    map.infoWindow.show(evt.geometry);
+                }
+            }
+
+            function errorSrch(error) {
+                alert(error);
+            }
+
+            function printIt() {
+                var win = window.open();
+                self.focus();
+                win.document.open();
+                win.document.write('<' + 'html' + '><' + 'head' + '><' + 'style' + '>');
+                win.document.write('body, td { font-family: Verdana; font-size: 12pt;}');
+                win.document.write(' th { font-weight: bold; text-align:left;}');
+                win.document.write('<' + '/' + 'style' + '><' + '/' + 'head' + '><' + 'body' + '>');
+                win.document.write('<table style=\"width:100%\"><th >Facility</th><th >Address</th><th >City</th>');
+
+                store.fetch({
+                    onComplete: function (items) {
+                        dojo.forEach(items, function (item, index) {
+                            //if(item.ProviderNa)
+                            win.document.write('<tr><td>' + item.ProviderNa + '</td><td>' + item.ARC_Addres + '</td><td>' + item.ARC_City + '</td></tr>');
+                            //else
+                            //	win.document.write('<tr><td>' + item.providerna + '</td><td>' + item.ARC_Addres + '</td><td>' + item.ARC_City + '</td></tr>');
+                        });
+                    }
+                });
+                win.document.write('</table>');
+                win.document.write('<' + '/' + 'body' + '><' + '/' + 'html' + '>');
+                win.document.close();
+                win.print();
+                win.close();
+            }
+
+            /*function resetMap() {
+            clearGrid();
+            dijit.byId('btnPrint').set('disabled', 'disbaled');
+            dojo.byId('rec_count').innerHTML = "";
+            dojo.byId('map_name').value = "AECAM";
+            map.setExtent(initialExtent);
+            map.graphics.clear();
+            map._layers.aecam.setVisibleLayers([5, 88]);
+            identifyParams.layerIds = map._layers.aecam.visibleLayers;
+            }*/
+            function selectTab(tab) {
+                dijit.byId('accordion').selectChild(tab);
+            }
+            /*function clearGrid() {
+            var newStore = new ItemFileReadStore({ data: { identifier: "", items: []} });
+            var grid = dijit.byId("grid");
+            grid.setStore(newStore);
+            }*/
+            function getBBContent(graphic) {
+                content = "<table>";
+                //content += "<tr><td>Program:</td><td>" + graphic.attributes.layerName + " </td></tr>";
+                content += "<tr><td>Provider Name:</td><td>" + graphic.attributes.ProviderNa + " </td></tr>";
+                content += "<tr><td>Address:</td><td>" + graphic.attributes.ARC_Addres + "</td></tr>";
+                content += "<tr><td></td><td>" + graphic.attributes.ARC_City + ", " + graphic.attributes.ARC_State + " " + graphic.attributes.ARC_Zip + "</td></tr>";
+                content += "<tr><td>Facility Type:</td><td>" + graphic.attributes.FacilityTy + "</td></tr>";
+                content += "<tr><td>State House Rep:</td><td><a target='_new' href='" + graphic.attributes.House_Web + "'>" + graphic.attributes.House_Rep + "</a></td></tr>";
+                content += "<tr><td>State Senator:</td><td><a target='_new' href='" + graphic.attributes.Senate_Web + "'>" + graphic.attributes.Senator + "</a></td></tr>";
+                content += "<tr><td>US House Rep:</td><td><a target='_new' href='" + graphic.attributes.Cong_Web + "'>" + graphic.attributes.Cong_Rep + "</a></td></tr>";
+                content += "</table>";
+                return content;
+            }
+            function getSNPContent(graphic) {
+                content = "<table>";
+                content += "<tr><td>Program:</td><td>" + graphic.attributes.layerName + " </td></tr>";
+                content += "<tr><td>Provider Name:</td><td>" + graphic.attributes.ProviderNa + " </td></tr>";
+                content += "<tr><td>Address:</td><td>" + graphic.attributes.ARC_Addres + "</td></tr>";
+                content += "<tr><td></td><td>" + graphic.attributes.ARC_City + ", " + graphic.attributes.ARC_State + " " + graphic.attributes.ARC_Zip + "</td></tr>";
+                content += "<tr><td>Facility Type:</td><td>" + graphic.attributes.FacilityTy + "</td></tr>";
+                content += "<tr><td>State House Rep:</td><td><a target='_new' href='" + graphic.attributes.House_Web + "'>" + graphic.attributes.House_Rep + "</a></td></tr>";
+                content += "<tr><td>State Senator:</td><td><a target='_new' href='" + graphic.attributes.Senate_Web + "'>" + graphic.attributes.Senator + "</a></td></tr>";
+                content += "<tr><td>US House Rep:</td><td><a target='_new' href='" + graphic.attributes.Cong_Web + "'>" + graphic.attributes.Cong_Rep + "</a></td></tr>";
+                content += "</table>";
+                return content;
+            }
+            function getABCContent(graphic) {
+                content = "<table>";
+                content += "<tr><td>Program:</td><td>" + graphic.attributes.layerName + " </td></tr>";
+                content += "<tr><td>Provider Name:</td><td>" + graphic.attributes.Name + " </td></tr>";
+                content += "<tr><td>Address:</td><td>" + graphic.attributes.ARC_Addres + "</td></tr>";
+                content += "<tr><td></td><td>" + graphic.attributes.ARC_City + ", " + graphic.attributes.ARC_State + " " + graphic.attributes.ARC_Zip + "</td></tr>";
+                content += "<tr><td>Facility Type:</td><td>" + graphic.attributes.FacilityTy + "</td></tr>";
+                content += "<tr><td>State House Rep:</td><td><a target='_new' href='" + graphic.attributes.House_Web + "'>" + graphic.attributes.House_Rep + "</a></td></tr>";
+                content += "<tr><td>State Senator:</td><td><a target='_new' href='" + graphic.attributes.Senate_Web + "'>" + graphic.attributes.Senator + "</a></td></tr>";
+                content += "<tr><td>US House Rep:</td><td><a target='_new' href='" + graphic.attributes.Cong_Web + "'>" + graphic.attributes.Cong_Rep + "</a></td></tr>";
+                content += "</table>";
+                return content;
+            }
+            function getCCFContent(graphic) {
+                content = "<table>";
+                content += "<tr><td>Program:</td><td>" + graphic.attributes.layerName + " </td></tr>";
+                content += "<tr><td>Provider Name:</td><td>" + graphic.attributes.ProviderNa + " </td></tr>";
+                content += "<tr><td>Address:</td><td>" + graphic.attributes.ARC_Addres + "</td></tr>";
+                content += "<tr><td></td><td>" + graphic.attributes.ARC_City + ", " + graphic.attributes.ARC_State + " " + graphic.attributes.ARC_Zip + "</td></tr>";
+                content += "<tr><td>Facility Type:</td><td>" + graphic.attributes.FacilityTy + "</td></tr>";
+                content += "<tr><td>License Type:</td><td>" + graphic.attributes.LicenseTyp + "</td></tr>";
+                content += "<tr><td>State House Rep:</td><td><a target='_new' href='" + graphic.attributes.House_Web + "'>" + graphic.attributes.House_Rep + "</a></td></tr>";
+                content += "<tr><td>State Senator:</td><td><a target='_new' href='" + graphic.attributes.Senate_Web + "'>" + graphic.attributes.Senator + "</a></td></tr>";
+                content += "<tr><td>US House Rep:</td><td><a target='_new' href='" + graphic.attributes.Cong_Web + "'>" + graphic.attributes.Cong_Rep + "</a></td></tr>";
+                content += "</table>";
+                return content;
+            }
+            function getHSContent(graphic) {
+                content = "<table>";
+                content += "<tr><td>Program:</td><td>" + graphic.attributes.layerName + " </td></tr>";
+                content += "<tr><td>Provider Name:</td><td>" + graphic.attributes.ProviderNa + " </td></tr>";
+                content += "<tr><td>Address:</td><td>" + graphic.attributes.ARC_Addres + "</td></tr>";
+                content += "<tr><td></td><td>" + graphic.attributes.ARC_City + ", " + graphic.attributes.ARC_State + " " + graphic.attributes.ARC_Zip + "</td></tr>";
+                content += "<tr><td>Facility Type:</td><td>" + graphic.attributes.FacilityTy + "</td></tr>";
+                content += "<tr><td>License Type:</td><td>" + graphic.attributes.LicenseTyp + "</td></tr>";
+                content += "<tr><td>State House Rep:</td><td><a target='_new' href='" + graphic.attributes.House_Web + "'>" + graphic.attributes.House_Rep + "</a></td></tr>";
+                content += "<tr><td>State Senator:</td><td><a target='_new' href='" + graphic.attributes.Senate_Web + "'>" + graphic.attributes.Senator + "</a></td></tr>";
+                content += "<tr><td>US House Rep:</td><td><a target='_new' href='" + graphic.attributes.Cong_Web + "'>" + graphic.attributes.Cong_Rep + "</a></td></tr>";
+                content += "</table>";
+                return content;
+            }
+            function getCountyContent(graphic) {
+                content = "<table>";
+                content += "<tr><td>" + graphic.attributes.NAMELSAD10 + " </td></tr>";
+                content += "</table>";
+                return content;
+            }
+            function getRoadContent(graphic) {
+                //alert(graphic.attributes.PSTR_NAM);
+                content = "<table>";
+                content += "<tr><td>" + graphic.attributes.PSTR_NAM + " " + graphic.attributes.PSTR_TYPE + "</tr>";
+                content += "<tr><td>" + graphic.attributes.SRC_DESC + "</tr>";
+                content += "</table>";
+                return content;
+            }
+            function getCityContent(graphic) {
+                //alert(graphic.attributes.PSTR_NAM);
+                content = "<table>";
+                content += "<tr><td width='50%'>City:</td><td></td><td>" + graphic.attributes.INCORPORAT + "</tr>";
+                content += "<tr><td>County:</td><td></td><td>" + graphic.attributes.DISTRICT_N + "</tr>";
+                content += "<tr><td>Pop 2000:</td><td></td><td>" + graphic.attributes.POP2000 + "</tr>";
+                content += "<tr><td>Pop 2010:</td><td></td><td>" + graphic.attributes.POP2010 + "</tr>";
+                content += "</table>";
+                return content;
+            }
+            function getZipContent(graphic) {
+                content = "<table>";
+                content += "<tr><td>Zip Code</td><td>" + graphic.attributes.NAME + " </td></tr>";
+                content += "</table>";
+                return content;
+            }
+            function getSchoolDistContent(graphic) {
+                content = "<table>";
+                content += "<tr><td>School District:</td><td>" + graphic.attributes.Name + " </td></tr>";
+                content += "<tr><td>LEA:</td><td>" + graphic.attributes.LEA + " </td></tr>";
+                content += "</table>";
+                return content;
+            }
+            function getSenateContent(graphic) {
+                content = "<table>";
+                content += "<tr><td>Senate District:</td><td>" + graphic.attributes.District_N + " </td></tr>";
+                content += "</table>";
+                return content;
+            }
+
+            function getHouseContent(graphic) {
+                content = "<table>";
+                content += "<tr><td>House District:</td><td>" + graphic.attributes.District_1 + " </td></tr>";
+                content += "</table>";
+                return content;
+            }
+            function getCongContent(graphic) {
+                content = "<table>";
+                content += "<tr><td>Congressional District:</td><td>" + graphic.attributes.DISTRICT + " </td></tr>";
+                content += "<tr><td>Congressional Represeantative:</td><td>" + graphic.attributes.REPRESENTA + " </td></tr>";
+                content += "<tr><td>District Population (2011):</td><td>" + graphic.attributes.POP_2011 + " </td></tr>";
+                content += "</table>";
+                return content;
+            }
+            //not used debug function
+            function layerList() {
+
+                var lyrs = map._layers.aecam;
+
+                alert(lyrs.visibleLayers);
+                map.removeLayer(0);
+
+            }
+
+
+            // dojo.addOnLoad(init);
+			
+        </script>
+        <script type="text/javascript">
+
+            var _gaq = _gaq || [];
+            _gaq.push(['_setAccount', 'UA-41258536-1']);
+            _gaq.push(['_trackPageview']);
+
+            (function () {
+                var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+            })();
+
+        </script>
+    </head>
+	<body class="claro">
+	<div class="bg_pg2">
+		<center><span id="headerimg"><img  style="margin-left:auto;margin-right:auto;" src="content/images/bg_Title_02.jpg" width="1100" height="106" border="0"></span></center>
+        <table class="header" width="100%" border="1" cellspacing="0" cellpadding="0"><tr><td>
+        <center>
+		    <table width="1300" border="0" cellspacing="0" cellpadding="0">
+                  <tbody><tr>
+                    <td width="15%" align="center"><a href=".">Home</a></td>                  
+                    <td align="center"><a href="aecam_0.html">Map Search</a></td>
+                    <td width="25%" align="center"><a href="AECAMSearch.aspx">Community Resources</a></td>
+                    <td align="center"><a href="UserGuide.aspx">Users Guide</a></td>
+                    <td align="center"><a href="ContactUs.aspx">Contact Us</a></td>
+                  </tr>
+                </tbody>
+		    </table>
+        </center>
+        </td></tr></table>
+	</div>
+        <div id="content" dojotype="dijit.layout.BorderContainer" design="headline" gutters="true" style="width: 100%; height: 75%; margin: 0;">			
+            <div dojotype="dijit.layout.ContentPane" id="leftPane" region="left" splitter="true" style="width: 350px;">
+				<div dojoType="dijit.layout.AccordionContainer" style="height: 300px;" id="accordion">
+					<div dojoType="dijit.layout.ContentPane" title="Table of Contents" selected="true" id="accToc">
+                        <div id="tocDiv">
+						</div>
+					</div>
+					<div dojoType="dijit.layout.ContentPane" title="Map Search" style="display:none;">
+						<table cellpadding=5><tr>
+							<td>Search:</td>
+						<td><select id="program" >
+                          <option value="0">Better Beginnings Programs</option>
+						  <option value="1">Special Nutrition Programs</option>
+						  <option value="2">Arkansas Better Chance</option>
+						  <option value="3">Child Care Facilities</option>
+						  <option value="4">Head Start Facilities</option>				  
+						</select><br/></td></tr>
+						<tr><td>On field:</td>
+						<td><select id="fieldval">
+						  <option value="ARC_City">City</option>
+						  <option value="ARC_Zip">Zip Code</option>
+						  <option value="School_Dis">School District</option>
+						  <option value="House_Dist">AR House Dist</option>				  
+						  <option value="Senate_Dis">AR Senate Dist</option>
+						  <option value="Cong_Distr">US Congressional Dist</option>
+						</select><br/></td></tr>
+						<tr><td>For value:</td>
+							<!--td><input type="text" id="name" name="name" value="Pine Bluff" /></td></tr><tr><td> <button type="button" id="searchButton" onclick="doFind();">Search</button></td-->
+							<td><input type="text" id="name" name="name" value="Pine Bluff" /></td></tr><tr><td> <button type="button" id="searchButton">Search</button></td>
+						</tr></table>	
+					</div>
+					<div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'top'" title="Search Results" style="height:40px;" id='srchResults'>
+                        <div id='rec_count'></div>
+						<table data-dojo-type="dojox.grid.DataGrid" data-dojo-id="grid"  id="grid" data-dojo-props="rowSelector:'20px'">
+						  <thead>
+							<tr>
+							  <th field="OBJECTID">ID</th>
+							  <th field="ProviderNa" >Name</th>
+							  <th field="ARC_Addres">Address</th>
+							  <th field="ARC_City ">City</th>
+							</tr>
+						  </thead>
+						</table>
+					</div>					
+					<div dojoType="dijit.layout.ContentPane" title="Print" style="display:none;">
+						Map Title: <textarea rows=5 cols=30 id="map_name" name="map_name">AECAM</textarea><br /><br/>
+						<span id="printButton"></span>&nbsp;
+                        <button id="btnPrint" dojotype="dijit.form.Button" onClick="printIt(document.getElementById('grid').innerHTML); return false;" title="Print List" value="Print List">Print Data Grid</button>
+					</div>					
+				</div>	
+            </div>			
+            <div id="map" dojotype="dijit.layout.ContentPane" region="center">		
+				<span style="float:right;z-index:99;position:absolute;top:10px;right:20px;">						
+						<button data-dojo-type="dijit.form.Button" data-dojo-props="iconClass:'dijitEditorIconPaste', showLabel: true" onclick="navToolbar.zoomToPrevExtent();" type="button">Previous Extent</button>
+						<!--button data-dojo-type="dijit.form.Button" data-dojo-props="iconClass:'dijitPrintIcon', showLabel: true" onclick="resetMap();selectTab('accToc');" type="button">Reset Map</button-->
+						<button data-dojo-type="dijit.form.Button" data-dojo-props="iconClass:'dijitPrintIcon', showLabel: true" id="resetBtn"  type="button">Reset Map</button>						
+				</span>
+            </div>
+        </div>
+	<div  class="footer">
+    <table width="1100px" border="0" align="center" cellpadding="10" cellspacing="0">
+      <tbody><tr>
+        <td width="500" align="left"><a href="default.aspx">Home</a> |<a href="about.aspx"> About Us</a> | <a href="aecam_0.html">GIS Map</a> | <a href="AECAMSearch.aspx">Community Resources</a></td>
+        <td width="600" align="right">Problems with the site? <a href="mailto:ilfarmahan@ualr.edu">Contact the Webmaster</a></td>
+     </tr>
+     <tr>
+		<td colspan="2" align="center">©
+        <span id="year">2014</span> Arkansas Early Childhood Asset Map</td>
+        </tr>
+    </tbody></table>
+	</div>
+    </body>
+</html>

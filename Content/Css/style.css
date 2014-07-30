@@ -1,0 +1,368 @@
+/* CSS Document */
+body {
+    background-color: #5c87b2;
+    font-size: .85em;
+    font-family: "Trebuchet MS", Verdana, Helvetica, Sans-Serif;
+    margin: 0;
+    padding: 0;
+    color: #696969;
+}
+.bg_pg1 {
+	background-image: url(../../Content/images/bg_Div_01.jpg);
+	background-repeat: repeat-x;
+}
+
+.bg_pg2 {
+	background-image: url(../../Content/images/bg_Div_02.jpg);
+	background-repeat: repeat-x;
+}
+
+.text_main {
+	font-family: Calibri, "Trebuchet MS", Arial, sans-serif;
+	font-size: 18px;
+	line-height: 22px;
+	color: #000000;
+	margin-top: 8px;
+	margin-bottom: 8px;
+}
+.text_main a {
+	color: #2E6BA2;
+}
+
+.text_title {
+	font-family: Calibri, "Trebuchet MS", Arial, sans-serif;
+	font-size: 30px;
+	line-height: 34px;
+	color: #000000;
+	margin-top: 1px;
+	margin-bottom: 1px;
+}
+.text_title2 {
+	font-family: Calibri, "Trebuchet MS", Arial, sans-serif;
+	font-size: 20px;
+	line-height: 24px;
+	color: #DE210B;
+	margin-top: 1px;
+	margin-bottom: 1px;
+}
+
+.footer {
+	font-family: Calibri, "Trebuchet MS", Arial, sans-serif;
+	font-size: 16px;
+	line-height: 20px;
+	color: #000000;
+	margin-top: 3px;
+	margin-bottom: 3px;
+	background-color: #FFCC00;
+}
+
+.footer a{
+	color: #000000;
+}
+.page {
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+a:link {
+    color: #034af3;
+    text-decoration: underline;
+}
+
+a:visited {
+    color: #505abc;
+}
+
+a:hover {
+    color: #1d60ff;
+    text-decoration: none;
+}
+
+a:active {
+    color: #12eb87;
+}
+
+/* Front page menu vertical */
+
+#vertmenu {
+font-family: Verdana, Arial, Helvetica, sans-serif;
+font-size: 200%;
+width: 260px;
+padding: 0px;
+margin: 0px;
+margin-left: auto ;
+margin-right: auto ;
+}
+
+#vertmenu select{
+    border: 1px solid #ccc;
+    padding: 2px;
+    font-size: .6em;
+    color: #444;
+}
+
+#vertmenu input{
+    border: 1px solid #ccc;
+    /*padding: 2px;*/
+    font-size: .6em;
+    width:300px;
+    
+}
+
+.srchTerms
+{
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 100%;
+    padding: 0px 20px 0px 60px;
+}
+
+.srchSection
+{
+    padding: 20px 0px 0px 40px;
+    display: none;
+    vertical-align:top;
+    /*height:780px;*/
+    /*width:750px;*/
+    /*width: 260px;       */
+}
+
+img.locator{   position:relative;
+/*left:-220px;*/ }  
+
+img.sfpf{   position:relative;
+/*left:-320px;*/ }    
+
+/* centering for landing page buttons */
+
+#parent { height: 100% ; width:100%; margin-left: auto;
+    margin-right: auto; float:left}
+.child 
+{
+    float:right;
+	width: 50%;
+    height: 200px;
+    text-align:center;
+    margin-top: 40px;
+} 
+
+div.left {
+    /*background:blue;*/
+    height:300px;
+    width:50%;
+}
+
+div.right{
+    background:green;
+    height:300px;
+    width:49%;
+}
+
+
+.container div {
+ /* display: inline-block;
+  font-size:0px;*/
+}
+
+.ui-combobox {
+		position: relative;
+		display: inline-block;
+}
+.ui-combobox-toggle {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	margin-left: -1px;
+	padding: 0;
+	/* adjust styles for IE 6/7 */
+	height: 1.7em;
+	top: 0.1em;
+}
+.ui-combobox-input {
+	margin: 0;
+	padding: 0.3em;
+}
+
+table.header
+{   
+    width: 100%;
+    word-wrap: break-word;
+    table-layout: fixed;
+}   
+
+table.header tr
+{
+    line-height:44px;
+    
+}
+
+table.header td
+{
+    text-align:center;
+    /*width: 25%;*/
+}    
+
+table.header td a
+{
+    text-decoration:none;
+    font-size:x-large;
+    font-family: "Trebuchet MS", Verdana, Helvetica, Sans-Serif;
+    color: White;
+    text-shadow: black 0.1em 0.1em 0.2em;
+}
+
+table.theader
+{   
+    width: 100%;
+    word-wrap: break-word;
+    table-layout: fixed;
+}   
+
+table.theader tr
+{
+    line-height:44px;
+    
+}
+
+table.theader td
+{
+    /*text-align:center;*/
+    /*width: 25%;*/
+}    
+
+table.theader td a
+{
+    text-decoration:none;
+    font-size:x-large;
+    font-family: "Trebuchet MS", Verdana, Helvetica, Sans-Serif;
+    color: White;
+    text-shadow: black 0.1em 0.1em 0.2em;
+} 
+
+        /* Autocomplete
+----------------------------------*/
+.ui-autocomplete { position: absolute; cursor: default; }       
+.ui-autocomplete-loading { background: white url('images/ui-anim_basic_16x16.gif') right center no-repeat; }
+
+/* workarounds */
+* html .ui-autocomplete { width:1px; } /* without this, the menu expands to 100% in IE6 */
+
+/* Menu
+----------------------------------*/
+.ui-menu {
+        list-style:none;
+        padding: 2px;
+        margin: 0;
+        display:block;
+}
+.ui-menu .ui-menu {
+        margin-top: -3px;
+}
+.ui-menu .ui-menu-item {
+        margin:0;
+        padding: 0;
+        width: 100%;
+}
+.ui-menu .ui-menu-item a {
+        text-decoration:none;
+        display:block;
+        padding:.2em .4em;
+        line-height:1.5;
+        zoom:1;
+}
+.ui-menu .ui-menu-item a.ui-state-hover,
+.ui-menu .ui-menu-item a.ui-state-active {
+        margin: -1px;
+}       
+
+/********************* back to school *****************************/
+
+div.bts {
+  width: 800px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+ul.bts {
+  list-style-type: none;
+}
+
+li.bts img {
+  float: left;
+  margin: 10px;
+  border: 5px solid #ccc;
+
+  -webkit-transition: box-shadow 0.5s ease;
+  -moz-transition: box-shadow 0.5s ease;
+  -o-transition: box-shadow 0.5s ease;
+  -ms-transition: box-shadow 0.5s ease;
+  transition: box-shadow 0.5s ease;
+}
+
+li.bts img:hover {
+  -webkit-box-shadow: 0px 0px 7px rgba(255,255,255,0.9);
+  box-shadow: 0px 0px 7px rgba(255,255,255,0.9);
+}
+
+/***** tooltip ********/
+
+.tooltip{
+    display: inline;
+    position: relative;
+}
+
+.tooltip:hover:after{
+    /*background: #333;
+    background: rgba(0,0,0,.8);
+    border-radius: 5px;*/
+    bottom: 26px;
+    color: #fff;
+    content: attr(title);
+    left: 20%;
+    padding: 5px 15px;
+    position: absolute;
+    z-index: 98;
+    width: 220px;
+}
+ 
+/*.tooltip:hover:before{
+    border: solid;
+    border-color: #333 transparent;
+    border-width: 6px 6px 0 6px;
+    bottom: 20px;
+    content: "";
+    left: 50%;
+    position: absolute;
+    z-index: 99;
+}*/
+
+/*** Field highlight ***********/
+input[type=text], textarea {
+  -webkit-transition: all 0.30s ease-in-out;
+  -moz-transition: all 0.30s ease-in-out;
+  -ms-transition: all 0.30s ease-in-out;
+  -o-transition: all 0.30s ease-in-out;
+  outline: none;
+  padding: 3px 0px 3px 3px;
+  margin: 5px 1px 3px 0px;
+  border: 1px solid #DDDDDD;
+}
+ 
+input[type=text]:focus, textarea:focus {
+  box-shadow: 0 0 5px rgba(81, 203, 238, 1);
+  padding: 3px 0px 3px 3px;
+  margin: 5px 1px 3px 0px;
+  border: 1px solid rgba(81, 203, 238, 1);
+}
+
+/************** Fieldset for AECAMSearch page **************/
+
+fieldset { border:3px solid gold; width: 50%; }
+
+legend {
+  padding: 0.2em 0.5em;
+  border:1px solid gold;
+  color:black;
+  font-size:90%;
+  font-weight:bold;
+  }

@@ -1,0 +1,38 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using DHSDataSetTableAdapters;
+public partial class SimpleSearch : System.Web.UI.Page
+{
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        PopulateCountyDropDown();
+        //PopulateServicesDropDown();
+    }
+
+    public void PopulateCountyDropDown()
+    {
+
+        masterFIPSTableAdapter countyDropDown = new masterFIPSTableAdapter();
+        DropDownCounty.DataSource = countyDropDown.GetCountyList();
+        DropDownCounty.DataTextField = "countyName";
+        DropDownCounty.DataValueField = "countyFIPS";
+        DropDownCounty.DataBind();
+    }
+
+    public void PopulateServicesDropDown()
+    {
+
+        rgServicesProvidedTableAdapter servicesDropDown = new rgServicesProvidedTableAdapter();
+      /*  DropDownService.DataSource = servicesDropDown.GetDataByServicesUsed();
+        DropDownService.DataTextField = "service";
+        DropDownService.DataValueField = "serviceFK";
+        DropDownService.DataBind();*/
+    }
+
+   
+
+}

@@ -1,0 +1,125 @@
+﻿$(document).ready(function () {
+
+    $("#serviceSearch").autocomplete({
+        source: function (request, response) {
+            var partial = request.term;
+            $.ajax({
+                url: 'WebService.asmx/serviceLookup',
+                data: "{ 'partial': '" + partial + "' }",
+                dataType: "json",
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                dataFilter: function (data) { return data; },
+                success: function (data) {
+                    response($.map(data.d, function (item) {
+                        return {
+                            label: item,
+                            value: item
+                        }
+                    }))
+                }
+            });
+        },
+        minLength: 1
+    });
+
+    $('#address').change(function () {
+        if (this.value != "") {
+            geocodeAddress(this.value)
+        }
+
+    });
+
+   /* $(".srchRadio").change(function () {
+        showSection(this.value)
+    });*/
+
+    $(".catRadio").change(function () {
+        if (this.value == "professional") {
+            $("#profSearch").show();
+        } else {
+            $("#profSearch").hide();
+        }
+        $("#sfpf").hide();
+    });
+
+    $("#year").text((new Date).getFullYear());
+
+    AddressEntered = readCookie('DHSaddress');
+    /*SearchRadius = readCookie('DHSradius');
+    if (SearchRadius == null) {
+        SearchRadius = 'any';
+    } else {
+        $('#' + SearchRadius).attr('checked', true);
+        $("#distanceToggle").attr('checked', true);
+    }*/
+    if (AddressEntered != null) {        
+        $('#address').val(AddressEntered);
+    }
+
+    $("#distanceToggle").change(function () {
+        distanceSearch($("#distanceToggle").is(':checked'));
+    });    
+    showSection($('input[name=radiomenu]:checked').val());
+});
+
+/*function showSection(secValue) {
+    $(".srchSection").each(function () {
+        $(this).hide();
+    })
+    $("#" + secValue).show();
+    if (secValue == "keyword" || secValue == "services") {
+        $('#limitSearch').show();
+    }   
+}*/
+function distanceSearch(state) {
+    $("#5").attr('disabled', !state);
+    $("#10").attr('disabled', !state);
+    $("#15").attr('disabled', !state);
+    $("#20").attr('disabled', !state);
+    $("#any").attr('disabled', !state);
+
+}
+/*geocode the address of origin and store in a cookie
+function geocodeAddress(address) {
+    var geocoder = new google.maps.Geocoder();
+    if (geocoder) {
+        geocoder.geocode({ 'address': address }, function (results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+                lng = results[0].geometry.location.lng();
+                lat = results[0].geometry.location.lat();
+                createCookie('MyLat', lat, 10);
+                createCookie('MyLong', lng, 10);                             
+            } else {
+                result = "Geocode was not successful for the following reason: " + status;
+            }
+        })        
+    }
+}*/
+/*function setAddress() {
+        //get the origin address
+        if ($('#address').val() == '') {
+            alert('Please enter an address');
+            $('#address').focus();
+            return false;
+        }
+        var radius = $('input[name=radiusValue]:checked').val();        
+        createCookie('DHSaddress', $('#address').val(), 10);
+        if (radius == 'any') {
+            eraseCookie("DHSradius");
+        } else {
+            createCookie('DHSradius', $('input[name=radiusValue]:checked').val(), 10);
+        }
+        
+    return true;
+   }*/
+
+/*function submitSearch(searchArea, currentFilter) {
+
+    var searchType = $('input[name=profparent]:checked').val();
+
+    //google analytics information
+    _gaq.push(['_trackEvent', 'prof-parent', 'search', searchType]);
+    _gaq.push(['_trackEvent', 'search', searchArea, currentFilter]);
+    document.location.href = 'SearchResults.aspx?searchType=' + searchType + '&tab=tabs-RES&searchArea=' + searchArea + '&searchFilter=' +currentFilter;
+}*/
