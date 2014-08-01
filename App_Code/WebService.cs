@@ -134,14 +134,14 @@ public class WebService : System.Web.Services.WebService {
         //int i = 0;
         OrderedDictionary myOrderedDictionary = new OrderedDictionary();
         ICollection valueCollection = myOrderedDictionary.Values;
-        ABCTableAdapter kw = new ABCTableAdapter();
-        DHSDataSet.ABCDataTable dt = kw.DataAutocompleteCity(partial);
+        ABCSitesTableAdapter kw = new ABCSitesTableAdapter();
+        DHSDataSet.ABCSitesDataTable dt = kw.DataAutocompleteCity(partial);
 
-        foreach (DHSDataSet.ABCRow row in dt)
+        foreach (DHSDataSet.ABCSitesRow row in dt)
         {
-            if (!myOrderedDictionary.Contains(row.ARC_City))
+            if (!myOrderedDictionary.Contains(row.City))
             {
-                myOrderedDictionary.Add(row.ARC_City, row.ARC_City);
+                myOrderedDictionary.Add(row.City, row.City);
             }
 
         }
