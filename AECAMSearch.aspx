@@ -140,16 +140,16 @@
             <font style="color:Gray; font-size:smaller" >Note: The address you provide is not recorded, it will only be used to provide distance related information.</font>                        
             <br /><br /><br />
         </div>
-        <div class="tab-set">
-            <ul class="tabs clearfix">
+        <div>
+            <!--ul class="tabs clearfix">
 	            <li><a href="#tabs-ABC">Arkansas Better Chance</a></li>
 	            <li><a href="#tabs-CCF">Child Care Facilities</a></li>
 	            <li><a href="#tabs-SNP">Special Nutrition Programs</a></li>
                 <li><a href="#tabs-HS">Head Start Facilities</a></li>
                 <li><a href="#tabs-BB">Better Beginnings</a></li>
                 <li><a href="#tabs-RES">Resources</a></li>
-            </ul>
-	        <div id="tabs-ABC">
+            </ul -->
+	        <!--div id="tabs-ABC">
                 <strong>The Arkansas Better Chance program is funded through an appropriation in the Arkansas Department of Education (ADE) Public School Fund budget. ADE contracts with the DHS Division of Child Care and Early Childhood Education to administer the program. The Division is responsible for all operational duties associated with ABC. The State Board of Education is the final authority for approval of rules and grants. The Division gives regular reports and updates to the State Board of Education, as well as an annual report to the Joint Legislative Committee on Education.</strong>
                 <br /><br />
                 <fieldset>
@@ -197,7 +197,7 @@
                         </iframe>
                     </p> 
                 </center--> 
-                <p>
+                <!--p>
                     <br /><strong>Source:</strong> Arkansas Department of Human Services
                 </p>                        
                 <hr />
@@ -286,7 +286,7 @@
                         <li><a target="_new" href='http://www.arbetterbeginnings.com/'>Arkansas Better Beginnings</a></li>
                     </ul>
                 </p>                           
-	        </div>
+	        </div -->
             <div id="tabs-RES">                
                 <p><strong>Search Tips</strong></p>
                 <ul>
