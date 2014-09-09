@@ -4,7 +4,7 @@
     <link href="Content/Css/feedback.css" rel="stylesheet" type="text/css" />    
     <script type="text/javascript" src="Scripts/jquery-1.7.2.min.js"></script>
     <script src="Scripts/jquery-ui-1.8.11.min.js" type="text/javascript"></script>
-    <script type="text/javascript" src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.13.0/jquery.validate.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
             $("#form1").validate({
@@ -277,11 +277,7 @@
                                     <div class="choicefield choice">
                                         <div class="choiceinput">
                                             <asp:RadioButtonList ID="rblist3" runat="server">
-                                                <asp:ListItem Text="Community Resources, Find ABC (Arkansas Better Chance)" value="Community Resources, Find ABC (Arkansas Better Chance)"></asp:ListItem>
-                                                <asp:ListItem Text="Community Resources, Find Child Care Facilities" value="Community Resources, Find Child Care Facilities"></asp:ListItem>
-                                                <asp:ListItem Text="Community Resources, Find Head Start Programs" value="Community Resources, Find Head Start Programs"></asp:ListItem>
-                                                <asp:ListItem Text="Community Resources, Find Special Nutritional Programs" value="Community Resources, Find Special Nutritional Programs"></asp:ListItem>
-                                                <asp:ListItem Text="Community Resources, Resources" value="Community Resources, Resources"></asp:ListItem>
+                                                <asp:ListItem Text="Community Resources" value="Community Resources"></asp:ListItem>
                                                 <asp:ListItem Text="Mapping feature" value="Mapping feature"></asp:ListItem>
                                             </asp:RadioButtonList>
                                         </div>
