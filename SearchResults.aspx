@@ -310,7 +310,7 @@
                 <asp:Parameter DefaultValue="0.00" Name="Radius" Type="Double" />
             </SelectParameters>
         </asp:ObjectDataSource>
-        Source: UAMS Family and Preventive Medicine / TIPS for Great Kids Program
+        Source: UAMS Family and Preventive Medicine
 </div>
 <div id="map_canvas"></div>
     <br />

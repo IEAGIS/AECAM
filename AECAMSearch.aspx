@@ -327,7 +327,7 @@
                         </td>                                
                     </tr>                            
                     <tr><td colspan=3><br /><br />
-                    <strong>Source:</strong> UAMS Family and Preventive Medicine / TIPS for Great Kids Program 
+                    <strong>Source:</strong> UAMS Family and Preventive Medicine
                     <hr />
                     <p><strong>Other Child Care Facilities Resources</strong>
                     <ul>

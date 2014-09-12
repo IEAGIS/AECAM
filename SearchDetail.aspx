@@ -142,7 +142,7 @@ Services Provided
         </SelectParameters>
     </asp:ObjectDataSource>
     <br />
-    Source: UAMS Family and Preventive Medicine / TIPS for Great Kids Program
+    Source: UAMS Family and Preventive Medicine
 </fieldset>
 <div id="map_canvas"></div>
 <div id="panel" style="overflow:auto;height:350px"></div>
