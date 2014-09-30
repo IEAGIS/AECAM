@@ -140,7 +140,7 @@
             <font style="color:Gray; font-size:smaller" >Note: The address you provide is not recorded, it will only be used to provide distance related information.</font>                        
             <br /><br /><br />
         </div>
-        <div>
+        <div class="tab-set">
             <ul class="tabs clearfix">
 	            <li><a href="#tabs-ABC">Arkansas Better Chance</a></li>
 	            <li><a href="#tabs-CCF">Child Care Facilities</a></li>
