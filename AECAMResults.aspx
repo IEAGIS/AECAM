@@ -56,7 +56,12 @@
                         <asp:Label ID="AgencyNameLabel" runat="server" 
                             Text='<%# Eval("AgencyName") %>' />
                     </td>
-                   
+                   <td style="display:none">
+                        <asp:Label ID="XLabel" runat="server" Text='<%# Eval("X") %>' CssClass="LAT" />
+                    </td>
+                    <td style="display:none">
+                        <asp:Label ID="YLabel" runat="server" Text='<%# Eval("Y") %>' cssClass="LONG"/>
+                    </td>
                 </tr>
             </AlternatingItemTemplate>
             <EmptyDataTemplate>
@@ -89,7 +94,12 @@
                          <asp:Label ID="AgencyNameLabel" runat="server" 
                              Text='<%# Eval("AgencyName") %>' />
                      </td>
-                      
+                     <td style="display:none">
+                        <asp:Label ID="XLabel" runat="server" Text='<%# Eval("X") %>' CssClass="LAT" />
+                    </td>
+                    <td style="display:none">
+                        <asp:Label ID="YLabel" runat="server" Text='<%# Eval("Y") %>' cssClass="LONG"/>
+                    </td> 
                 </tr>
             </ItemTemplate>
             <LayoutTemplate>
