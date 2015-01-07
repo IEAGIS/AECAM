@@ -160,9 +160,9 @@
                     <strong>Search By:</strong> <select id="ABCsearchCat" class='searchParam'>
                         <option value="zip">Zip Code</option>
                         <option value="city">City</option>
-                        <option value="house">House District</option>
-                        <option value="senate">Senate District</option>
-                        <option value="school">School District</option>
+                        <!--option value="house">House District</option-->
+                        <!--option value="senate">Senate District</option-->
+                        <!--option value="school">School District</option-->
                     </select>&nbsp;&nbsp; 
                     <span class="ui-widget" style="height:100px" id="keyword"><input type="text" id="ABCsearchVal" name="ABCsearchVal"/>
                     &nbsp;&nbsp;<button id="ABC" onclick="processSearch(this.id,ABCsearchCat.value);return false;">Search</button></span>
