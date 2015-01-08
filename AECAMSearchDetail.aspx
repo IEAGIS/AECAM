@@ -52,19 +52,16 @@
     <fieldset>
 Organization Details<br />
 <asp:DetailsView ID="DetailsView1" runat="server" AutoGenerateRows="False" 
-    DataKeyNames="OBJECTID" DataSourceID="ObjectDataSource1" Height="20px" 
+    DataKeyNames="SiteId" DataSourceID="ObjectDataSource1" Height="20px" 
     Width="500px" CellPadding="4" ForeColor="#333333" GridLines="None" >
     <AlternatingRowStyle BackColor="White" ForeColor="#284775" />
     <CommandRowStyle BackColor="#E2DED6" Font-Bold="True" />
     <EditRowStyle BackColor="#999999" />
     <FieldHeaderStyle BackColor="#E9ECF1" Font-Bold="True" />
     <Fields>
-        <asp:BoundField DataField="Name" HeaderText="Organization" 
-            SortExpression="ORGNAME" ItemStyle-CssClass="street_address">
+        <asp:BoundField DataField="SiteName" HeaderText="Site Name" SortExpression="SiteName" ItemStyle-CssClass="street_address">
 <ItemStyle CssClass="street_address"></ItemStyle>
         </asp:BoundField>
-        <asp:BoundField DataField="FacilityTy" HeaderText="Facility Type" 
-            SortExpression="FacilityTy" />
         <asp:BoundField DataField="Address" HeaderText="Address" SortExpression="Address" />
         <asp:TemplateField HeaderText="City, State Zip">
             <ItemTemplate>
@@ -74,13 +71,9 @@ Organization Details<br />
                   Text='<%# Eval("Zip") %>'></asp:Label>
             </ItemTemplate>
         </asp:TemplateField>
-        <asp:BoundField DataField="House_Dist" HeaderText="State House District" SortExpression="House_Dist" />
-        <asp:HyperLinkField HeaderText="State Representative" Target="_new" DataNavigateUrlFields="House_Web" DataNavigateUrlFormatString="{0}" DataTextField="House_Rep" />  
-        <asp:BoundField DataField="Senate_Dis" HeaderText="State Senate District" SortExpression="Senate_Dis" />
-        <asp:HyperLinkField HeaderText="State Senator" Target="_new" DataNavigateUrlFields="Senate_Web" DataNavigateUrlFormatString="{0}" DataTextField="Senator" />  
-        <asp:BoundField DataField="Cong_Distr" HeaderText="US Congressional District" SortExpression="Cong_Distr" />
-        <asp:HyperLinkField HeaderText="US Representative" Target="_new" DataNavigateUrlFields="Cong_Web" DataNavigateUrlFormatString="{0}" DataTextField="Cong_Rep" />  
-        <asp:BoundField DataField="School_Dis" HeaderText="School District" SortExpression="School_Dis" />        
+        
+        <asp:BoundField DataField="AgencyName" HeaderText="Agency Name" SortExpression="AgencyName" />
+            
         <asp:BoundField DataField="X" HeaderText="Latitude" SortExpression="X" 
             ReadOnly="True" ItemStyle-CssClass="lat">
         <HeaderStyle Wrap="False" />
@@ -99,11 +92,12 @@ Organization Details<br />
 </asp:DetailsView>
 <asp:ObjectDataSource ID="ObjectDataSource1" runat="server" 
     OldValuesParameterFormatString="original_{0}" SelectMethod="GetDataByID" 
-    TypeName="DHSDataSetTableAdapters.ABCTableAdapter">
+    TypeName="DHSDataSetTableAdapters.ABCSitesTableAdapter">
     <SelectParameters>
-        <asp:QueryStringParameter DefaultValue="2" Name="OBJECTID" QueryStringField="ID" 
+        <asp:QueryStringParameter DefaultValue="2" Name="SiteId" QueryStringField="SiteId" 
             Type="Int32" />
-    </SelectParameters>
+    </SelectParameters>    
+
 </asp:ObjectDataSource>
 <br />
 Source: DHS Child Care Licensing Data

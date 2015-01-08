@@ -17,7 +17,7 @@ public partial class AECAMSearchDetail : System.Web.UI.Page
         {
 
             case "ABC":
-                ObjectDataSource1.TypeName = "DHSDataSetTableAdapters.ABCTableAdapter";
+                ObjectDataSource1.TypeName = "DHSDataSetTableAdapters.ABCSitesTableAdapter";
                 break;
             case "CCF":
                 ObjectDataSource1.TypeName = "DHSDataSetTableAdapters.CFTableAdapter";
@@ -35,7 +35,7 @@ public partial class AECAMSearchDetail : System.Web.UI.Page
 
         ObjectDataSource1.SelectMethod = "GetDataByID";
         ObjectDataSource1.SelectParameters.Clear();
-        ObjectDataSource1.SelectParameters.Add("ID", param.ToString());
+        ObjectDataSource1.SelectParameters.Add("SiteId", param.ToString());
 
         lon = DetailsView1.Rows[12].Cells[1].Text;
         lat = DetailsView1.Rows[11].Cells[1].Text;
