@@ -83,13 +83,36 @@ Organization Details<br />
         <asp:BoundField DataField="Y" HeaderText="Longitude" SortExpression="Y" 
             ItemStyle-CssClass="long">        
 <ItemStyle CssClass="long"></ItemStyle>
-        </asp:BoundField>
+        </asp:BoundField> 
+
     </Fields>
     <FooterStyle BackColor="#5D7B9D" Font-Bold="True" ForeColor="White" />
     <HeaderStyle BackColor="#5D7B9D" Font-Bold="True" ForeColor="White" />
     <PagerStyle BackColor="#284775" ForeColor="White" HorizontalAlign="Center" />
     <RowStyle BackColor="#F7F6F3" ForeColor="#333333" />
 </asp:DetailsView>
+
+<asp:Repeater ID="Repeater1" runat="server" DataSourceID="ObjectDataSource1">   
+  <ItemTemplate>
+        <table style="border: none">
+            <tr>
+                <td>
+                    <asp:Label ID="Label4" runat="server" Text="Program Model"></asp:Label>
+                </td>
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <asp:Label ID="Label5" runat="server" Text='<%# Eval("ProgramModel") %>'></asp:Label>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+  </ItemTemplate>    
+</asp:Repeater>
+
 <asp:ObjectDataSource ID="ObjectDataSource1" runat="server" 
     OldValuesParameterFormatString="original_{0}" SelectMethod="GetDataByID" 
     TypeName="DHSDataSetTableAdapters.ABCSitesTableAdapter">

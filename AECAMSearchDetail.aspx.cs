@@ -37,10 +37,10 @@ public partial class AECAMSearchDetail : System.Web.UI.Page
         ObjectDataSource1.SelectParameters.Clear();
         ObjectDataSource1.SelectParameters.Add("SiteId", param.ToString());
 
-        lon = DetailsView1.Rows[12].Cells[1].Text;
-        lat = DetailsView1.Rows[11].Cells[1].Text;
-        DetailsView1.Fields[11].Visible = false;
-        DetailsView1.Fields[12].Visible = false;
+        lon = DetailsView1.Rows[5].Cells[1].Text;
+        lat = DetailsView1.Rows[4].Cells[1].Text;
+        DetailsView1.Fields[4].Visible = false;
+        DetailsView1.Fields[5].Visible = false;
 
     }
     public string getLat()
