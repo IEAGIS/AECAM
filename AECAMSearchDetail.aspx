@@ -92,27 +92,6 @@ Organization Details<br />
     <RowStyle BackColor="#F7F6F3" ForeColor="#333333" />
 </asp:DetailsView>
 
-<asp:Repeater ID="Repeater1" runat="server" DataSourceID="ObjectDataSource1">   
-  <ItemTemplate>
-        <table style="border: none">
-            <tr>
-                <td>
-                    <asp:Label ID="Label4" runat="server" Text="Program Model"></asp:Label>
-                </td>
-                <td>
-                    <table>
-                        <tr>
-                            <td>
-                                <asp:Label ID="Label5" runat="server" Text='<%# Eval("ProgramModel") %>'></asp:Label>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
-  </ItemTemplate>    
-</asp:Repeater>
-
 <asp:ObjectDataSource ID="ObjectDataSource1" runat="server" 
     OldValuesParameterFormatString="original_{0}" SelectMethod="GetDataByID" 
     TypeName="DHSDataSetTableAdapters.ABCSitesTableAdapter">
