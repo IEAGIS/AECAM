@@ -5,6 +5,8 @@
     <script type="text/javascript"src="http://maps.google.com/maps/api/js?sensor=false"></script>
     <script type="text/javascript" src="Scripts/utils.js"></script>   
     <script src="Scripts/AECAMResults.js" type="text/javascript"></script>
+
+    
     <style type="text/css">
     #map_canvas {
         height: 615px;

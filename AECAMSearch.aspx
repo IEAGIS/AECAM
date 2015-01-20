@@ -218,9 +218,9 @@
                         <strong>Search By:</strong> <select id="SNPsearchCat" class='searchParam'>
                             <option value="zip">Zip Code</option>
                             <option value="city">City</option>
-                            <option value="house">House District</option>
+                            <!--option value="house">House District</option>
                             <option value="senate">Senate District</option>
-                            <option value="school">School District</option>
+                            <option value="school">School District</option-->
                         </select>&nbsp;&nbsp; <input type="text" id="SNPsearchVal" name="SNPsearchVal" />
                         &nbsp;&nbsp;<button id="SNP" onclick="processSearch(this.id,SNPsearchCat.value);return false;">Search</button>
                     </p> 

@@ -23,7 +23,7 @@ public partial class AECAMResults : System.Web.UI.Page
                 ObjectDataSource1.TypeName = "DHSDataSetTableAdapters.CFTableAdapter";
                 break;
             case "SNP":
-                ObjectDataSource1.TypeName = "DHSDataSetTableAdapters.SNPTableAdapter";
+                ObjectDataSource1.TypeName = "DHSDataSetTableAdapters.SNPSitesTableAdapter";
                 break;
             case "HS":
                 ObjectDataSource1.TypeName = "DHSDataSetTableAdapters.HSTableAdapter";

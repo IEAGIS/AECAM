@@ -22,6 +22,7 @@
     <Shape ID="DesignTable:Feedback" ZOrder="7" X="788" Y="859" Height="324" Width="300" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="254" />
     <Shape ID="DesignTable:BB" ZOrder="4" X="1152" Y="475" Height="381" Width="194" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="254" />
     <Shape ID="DesignTable:ABCSites" ZOrder="1" X="704" Y="57" Height="267" Width="196" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="159" />
+    <Shape ID="DesignTable:SNPSites" ZOrder="1" X="704" Y="57" Height="267" Width="196" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="159" />
   </Shapes>
   <Connectors>
     <Connector ID="DesignRelation:rgOrganizations$rgFIPSrgOrganizations" ZOrder="22" LineWidth="11">
