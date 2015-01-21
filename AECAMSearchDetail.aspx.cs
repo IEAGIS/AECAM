@@ -32,7 +32,7 @@ public partial class AECAMSearchDetail : System.Web.UI.Page
                 ObjectDataSource1.TypeName = "DHSDataSetTableAdapters.BBTableAdapter";
                 break;
         }
-
+ 
         ObjectDataSource1.SelectMethod = "GetDataByID";
         ObjectDataSource1.SelectParameters.Clear();
         ObjectDataSource1.SelectParameters.Add("SiteId", param.ToString());
