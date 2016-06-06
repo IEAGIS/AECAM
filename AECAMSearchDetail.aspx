@@ -1,6 +1,6 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/DHS.master" AutoEventWireup="true" CodeFile="AECAMSearchDetail.aspx.cs" Inherits="AECAMSearchDetail" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
-    <script type="text/javascript"src="http://maps.google.com/maps/api/js?sensor=false"></script>
+    <script type="text/javascript"src="//maps.google.com/maps/api/js?sensor=false"></script>
     <script src="Scripts/searchDetail.js" type="text/javascript"></script>
     <script src="Scripts/utils.js" type="text/javascript"></script>
     <script type="text/javascript">

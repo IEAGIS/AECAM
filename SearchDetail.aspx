@@ -5,7 +5,7 @@
         var LAT = '<%= getLat() %>';
         var LONG = '<%= getLon() %>';
     </script>
-    <script type="text/javascript"src="http://maps.google.com/maps/api/js?sensor=false"></script>
+    <script type="text/javascript"src="//maps.google.com/maps/api/js?sensor=false"></script>
     <script src="Scripts/searchDetail.js" type="text/javascript"></script>
     <script src="Scripts/utils.js" type="text/javascript"></script>
     <style type="text/css">
@@ -49,7 +49,7 @@ Organization Details<br />
             SortExpression="CONTACT" />
         <asp:BoundField DataField="PHONE" HeaderText="Phone" SortExpression="PHONE" />
         <asp:BoundField DataField="FAX" HeaderText="Fax" SortExpression="FAX" />
-        <asp:HyperLinkField HeaderText="Website" Target="_new" DataNavigateUrlFields="WEBSITE" DataNavigateUrlFormatString="http://{0}" DataTextField="WEBSITE" />  
+        <asp:HyperLinkField HeaderText="Website" Target="_new" DataNavigateUrlFields="WEBSITE" DataNavigateUrlFormatString="//{0}" DataTextField="WEBSITE" />  
         <asp:BoundField DataField="EMAIL" DataFormatString="&lt;a href=mailto:{0}&gt;{0}&lt;/a&gt;" HtmlEncodeFormatString="false" HeaderText="email" SortExpression="EMAIL" />
         <asp:BoundField DataField="MADDR" HeaderText="Mailing Address" 
             SortExpression="MADDR" />

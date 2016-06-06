@@ -37,8 +37,10 @@
                                     <li class="bts"><a target="_blank" title="Getting Ready for School 2009" class="tooltip"  href="Content/grfs/Getting Ready For School 2009.pdf"><img src="Content/images/grfs2009.png" /></a></li>
                                     <li class="bts"><a target="_blank" title="Getting Ready for School 2010" class="tooltip"  href="Content/grfs/Getting Ready For School 2010.pdf"><img src="Content/images/grfs2010.png" /></a></li>
                                     <li class="bts"><a target="_blank" title="Getting Ready for School 2011" class="tooltip"  href="Content/grfs/Getting Ready For School 2011.pdf"><img src="Content/images/grfs2011.png" /></a></li>
-                                    <li class="bts"><a target="_blank" title="Getting Ready for School 2012" class="tooltip"  href="http://iea.ualr.edu/images/stories/IEA-pubs/2012/12-02_Getting_Ready_For_School_2012.pdf"><img src="Content/images/grfs2012.png" /></a></li>
-                                    <li class="bts"><a target="_blank" title="Getting Ready for School 2013" class="tooltip"  href="http://iea.ualr.edu/images/stories/IEA-pubs/2013/13_06_Getting_Ready_For_School_2013.pdf"><img src="Content/images/grfs2013.png" /></a></li>
+                                    <li class="bts"><a target="_blank" title="Getting Ready for School 2012" class="tooltip"  href="//iea.ualr.edu/images/stories/IEA-pubs/2012/12-02_Getting_Ready_For_School_2012.pdf"><img src="Content/images/grfs2012.png" /></a></li>
+                                    <li class="bts"><a target="_blank" title="Getting Ready for School 2013" class="tooltip"  href="//iea.ualr.edu/images/stories/IEA-pubs/2013/13_06_Getting_Ready_For_School_2013.pdf"><img src="Content/images/grfs2013.png" /></a></li>
+                                    <li class="bts"><a target="_blank" title="Getting Ready for School 2014" class="tooltip"  href="//iea.ualr.edu/images/stories/IEA-pubs/2014/06_14_Getting_Ready_For_School_2014.pdf"><img src="Content/images/grfs2014.png" /></a></li>
+                                    <li class="bts"><a target="_blank" title="Getting Ready for School 2015" class="tooltip"  href="Content/grfs/Getting Ready For School 2015.pdf"><img src="Content/images/grfs2015.png" /></a></li>
                                   </ul>
                                 </div>							    					   
 						    </td>

@@ -12,7 +12,7 @@
                 <br /><strong>Contact for DHS</strong><br />
                 Justin Foster<br />
                 (501) 320-8985<br />
-                <a href="mailto:Justin.Foster@arkansas.gov?subject=AECAM Resource Guide">Justin.Foster@arkansas.gov</a><br /><br />
+                <a href="mailto:Justin.Foster@dhs.arkansas.gov?subject=AECAM Resource Guide">Justin.Foster@dhs.arkansas.gov</a><br /><br />
             </td>
             <td>
                 &nbsp;
