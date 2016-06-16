@@ -5,8 +5,8 @@
         <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9" />
         <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
         <title>AECAM</title>
-        <link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dijit/themes/claro/claro.css">
-		<link rel="stylesheet" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
+        <link rel="stylesheet" href="//js.arcgis.com/3.8/js/dojo/dijit/themes/claro/claro.css">
+		<link rel="stylesheet" href="//js.arcgis.com/3.8/js/esri/css/esri.css">
 		<link rel="stylesheet" href="Content/css/style.css"/>
         <link rel="shortcut icon" href="favicon.ico"/>
         <style type="text/css">
@@ -15,7 +15,7 @@
                 width: 100%;
                 margin: 0;
                 padding: 0px;
-                font-family: helvetica, arial, sans-serif;
+                font-family: Tahoma,Arial,Helvetica,sans-serif;
                 font-size: 90%;
             }
             
@@ -54,62 +54,70 @@
               }
             };
         </script>
-        <!--script type="text/javascript" src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3/">        </script -->
-		<script src="http://js.arcgis.com/3.8/"></script>
+        <!--script type="text/javascript" src="//serverapi.arcgisonline.com/jsapi/arcgis/3.3/">        </script -->
+		<script src="//js.arcgis.com/3.10/"></script>
 
         <script type="text/javascript">
-            var map, symbol, graphic, previousLayer = 0;  //identity
+            var map, symbol, graphic, legendDijit, previousLayer = 0;  //identity
             var identifyTask, identifyParams, initialExtent, aecam, mtitle, grid, toc;  //identity
-            var demoArrays = [12, 19, 26, 33, 40, 47, 54, 60, 67, 74, 81];
+            var demoArrays = [12, 18, 24, 30, 36, 42, 49, 55, 61, 67, 73];
 
             require(["dojo/_base/connect",
 					 "dojo/dom", "dojo/parser", "dojo/on", "dojo/_base/Color",
-					 "dojo/data/ItemFileReadStore",
+					 "dojo/data/ItemFileReadStore", "dojo/mouse", "dojo/dom-class",
 
 					"esri/map", "esri/geometry/Extent",
 					"esri/layers/FeatureLayer", "esri/layers/ArcGISDynamicMapServiceLayer",
 					"esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol", "esri/symbols/SimpleMarkerSymbol",
 					"esri/renderers/ClassBreaksRenderer", "esri/dijit/Popup", "esri/toolbars/navigation",
-					"esri/dijit/Print", "esri/InfoTemplate",
+					"esri/dijit/Print", "esri/InfoTemplate", "esri/config", "esri/dijit/Legend",
 
 					"esri/tasks/QueryTask", "esri/tasks/query",
 					"esri/tasks/FindTask", "esri/tasks/FindParameters",
 					"esri/tasks/IdentifyTask", "esri/tasks/IdentifyParameters",
 					"esri/SpatialReference", "esri/graphic",
-					"esri/tasks/PrintTemplate",
+					"esri/tasks/PrintTemplate","esri/urlUtils",
 
-					"agsjs/dijit/TOC", "dijit/form/CheckBox",
-					"dijit/form/Button", "dijit/form/Select",
+					"agsjs/dijit/TOC", "dijit/form/CheckBox", "dojo/dnd/Moveable",
+					"dijit/form/Button", "dijit/form/Select", "dijit/form/FilteringSelect",
 					"dijit/Dialog", "dijit/form/TextBox",
-					"dijit/layout/AccordionContainer",
-					"dojox/grid/DataGrid",
+					"dijit/layout/AccordionContainer", "dojox/widget/Standby",
+					"dojox/grid/DataGrid", "dojo/_base/array",
 
 					 "dijit/layout/BorderContainer",
 					 "dijit/layout/ContentPane",
 					 "dojo/fx", "dojo/domReady!"],
 		 function (connect, dom, parser, on, Color,
-					ItemFileReadStore,
+					ItemFileReadStore, mouse, domClass,
 
 					Map, Extent,
 					FeatureLayer, ArcGISDynamicMapServiceLayer,
 					SimpleFillSymbol, SimpleLineSymbol, SimpleMarkerSymbol,
 					ClassBreaksRenderer, Popup, Navigation,
-					Print, InfoTemplate,
+					Print, InfoTemplate, esriConfig, Legend,
 
 					QueryTask, query,
 					FindTask, FindParameters,
 					IdentifyTask, IdentifyParameters,
-					SpatialReference, Graphic, PrintTemplate,
+					SpatialReference, Graphic, PrintTemplate, urlUtils,
 
-					TOC, CheckBox,
-					Button, Select,
+					TOC, CheckBox, Moveable,
+					Button, Select, FilteringSelect,
 					Dialog, TextBox,
-					AccordionContainer,
-					DataGrid) {
+					AccordionContainer, Standby,
+					DataGrid, arrayUtils) {
 
 		     parser.parse(); // note djConfig.parseOnLoad = false;
-
+			
+			/*urlUtils.addProxyRule({
+				urlPrefix: "argis.ualr.edu/arcgis/rest/services/AECAM_MAP",
+				proxyUrl: "//argis.ualr.edu/DotNet/proxy.ashx"
+			});*/
+			
+			//esriConfig.defaults.io.corsDetection=false;
+			
 		     dojo.connect(grid, "onRowClick", onRowClickHandler);
+			 //dojo.connect(grid, "onMouseOver", onRowClickHandler);
 		     //identify setup the popup window 
 		     var popup = new Popup({
 		         fillSymbol: new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([255, 0, 0]), 2), new Color([255, 255, 0, 0.25]))
@@ -127,15 +135,22 @@
 		     });
 
 
-		     aecam = new ArcGISDynamicMapServiceLayer("http://argis.ualr.edu/ieagis/rest/services/AECAM_MAP_COLLAPSE/MapServer", {
+		     aecam = new ArcGISDynamicMapServiceLayer("//argis.ualr.edu/arcgis/rest/services/AECAM_MAP/MapServer", {
 		         id: 'aecam',
 		         opacity: 0.8
 		     });
-
+			map.addLayer(aecam);
+					
+			var standby = new Standby({
+				id : "StandyBy1",
+				target : "content",
+			});
+			document.body.appendChild(standby.domNode);
+			standby.startup();
 		     map.on("load", function () {
 		         navToolbar = new Navigation(map);
 		         createPrintDijit(dojo.byId('map_name').value);
-		         aecam.setVisibleLayers([5, 88]);
+		         aecam.setVisibleLayers([5, 78]);
 		         toc = new TOC({
 		             map: map,
 		             layerInfos: [{
@@ -149,14 +164,13 @@
 		                 console.log('TOC loaded');
 
 		             toc.on('toc-node-checked', function (evt) {
+						standby.show();
 		                 // when check on one layer, turn off everything else on the public safety service.
 		                 //if (evt.checked && evt.rootLayer && evt.serviceLayer && evt.rootLayer == dynaLayer1){
-		                 if (evt.serviceLayer.id >= 12 && evt.serviceLayer.id <= 88) {
+		                 if (evt.serviceLayer.id > 12 && evt.serviceLayer.id < 79) {
 		                     if (evt.rootLayer && evt.serviceLayer && evt.rootLayer == aecam) {
-		                         //if(evt.serviceLayer.id === 12)
-		                         //alert(dojo.indexOf(demoArrays,evt.serviceLayer.id));
 		                         if (dojo.indexOf(demoArrays, evt.serviceLayer.id) !== -1)
-		                             evt.rootLayer.setVisibleLayers([5, 88]);
+		                             evt.rootLayer.setVisibleLayers([6, 79]);
 		                         else {
 		                             //alert(evt.checked);
 		                             if (evt.checked === true) {
@@ -167,10 +181,10 @@
 		                                 previousLayer = evt.serviceLayer.id;
 		                             } else {
 		                                 //alert('fff');
-		                                 evt.rootLayer.setVisibleLayers([5, 88]);
+		                                 evt.rootLayer.setVisibleLayers([6, 79]);
 		                             }
 		                         }
-		                     }
+		                     }								 
 		                 }
 		                 if (console) {
 		                     console.log("TOCNodeChecked, rootLayer:"
@@ -178,9 +192,13 @@
 										+ ", serviceLayer:" + (evt.serviceLayer ? evt.serviceLayer.id : 'NULL')
 										+ " Checked:" + evt.checked);
 		                 }
+						 legendDijit.refresh();
+						 standby.hide();
 		             });
-		         });
-		         identifyTask = new IdentifyTask("http://argis.ualr.edu/ieagis/rest/services/AECAM_MAP/MapServer");
+		         });				 			
+				 
+				 
+		         identifyTask = new IdentifyTask("//argis.ualr.edu/arcgis/rest/services/AECAM_MAP/MapServer");
 
 		         identifyParams = new IdentifyParameters();
 		         identifyParams.tolerance = 10;
@@ -189,96 +207,259 @@
 		         identifyParams.height = map.height;
 		         //identifyParams.layerIds = map._layers.aecam.visibleLayers; //[4, 87];
 
-		         map._layers.aecam.setVisibleLayers([5, 88]);
+		         aecam.setVisibleLayers([6, 79]);
 		         //identifyParams.layerIds = map._layers.aecam.visibleLayers;
 
 		         //Create Find Task using Post code layer
-		         findTask = new FindTask("http://argis.ualr.edu/ieagis/rest/services/AECAM_MAP/MapServer");
+		         findTask = new FindTask("//argis.ualr.edu/arcgis/rest/services/AECAM_MAP/MapServer");
 		         //Create the find parameters
 		         findParams = new FindParameters();
 		         findParams.returnGeometry = true;
 		         findParams.outSpatialReference = map.spatialReference;
+				 var baseURL = "//argis.ualr.edu/arcgis/rest/services/AECAM_MAP/MapServer/";				
+						
+				query = new query();
+				query.returnGeometry = false;
+				function runQuery(){
+					dojo.byId("termSearch").value = "";							
+					searchField = dojo.byId("searchParameter").value;
+					var baseUrl = "//argis.ualr.edu/arcgis/rest/services/AECAM_MAP/MapServer/";
+					queryTask = new QueryTask(baseURL + searchField);
+					switch(searchField){
+						case "11": //City
+								query.outFields = ["OBJECTID","CITY_NAME"];
+								query.fName = "CITY_NAME";
+								findParams.searchFields = ["CITY_NAME","City"];
+								break;	
+						case "10": //Zip Code
+								query.outFields = ["OBJECTID","NAME"];
+								query.fName = "NAME";
+								findParams.searchFields = ["NAME","Zip"];
+								break;
+						case "79": //County
+								query.outFields = ["OBJECTID","NAME10"];
+								query.fName = "NAME10";
+								findParams.searchFields = ["NAME10","County"];
+								break;
+						case "12": //School Dist
+								query.outFields = ["OBJECTID","Name"];
+								query.fName = "Name";
+								findParams.searchFields = ["Name","School_Dis"];
+								break;
+						case "8": //House Dist
+								query.outFields = ["OBJECTID","District_1"];
+								query.fName = "District_1";
+								findParams.searchFields = ["District_1","House_Distr"];
+								break;
+						case "7": //Senate Dist
+								query.outFields = ["OBJECTID","District_N"];
+								query.fName = "District_N";
+								findParams.searchFields = ["District_N","Senate_Dis"];
+								break;
+						case "9": //Congr Dist
+								query.outFields = ["OBJECTID","DISTRICT"];
+								query.fName = "DISTRICT";
+								findParams.searchFields = ["DISTRICT","Cong_Distr"];
+								break;
+						default : 
+								return false;
+					}
+					query.where = "OBJECTID<>0";
+					queryTask.execute(query, qryResults);
+				}	
+				function qryResults(results){
+					
+					//Populate the dropdown list box with unique uniqueValues
+					uniqueValues = [];
+					duplicateVals = {};
+					dataFieldNames = ["","","","District_N","District_1","DISTRICT","NAME","Name","CITY_NAME","NAME10"];
+					
+					features = results.features;
+					dojo.forEach (features, function(feature) {
+						strName = "feature.attributes." + query.fName; //dataFieldNames[dojo.byId("searchParameter").value];
+						curName = eval(strName);
+						if (!duplicateVals[curName]) {
+							duplicateVals[curName] = true;
+							uniqueValues.push({"OBJECTID":feature.attributes.OBJECTID,"TEXT":curName});
+						}
+					});
+					
+					dataItems = {
+						identifier: "OBJECTID",
+						label: "TEXT",
+						items: uniqueValues
+					};
+					
+					selectStore = new dojo.data.ItemFileReadStore({data:dataItems});
+
+					dijit.byId("termSearch").set("store", selectStore);	
+				}
+				on(searchParameter, "change", runQuery);
+				//on(program, "change", runQuery);
+				standby.hide();
+			 
+				map.on("layers-add-result", function (evt) {					
+					var layerInfo = arrayUtils.map(evt.layers, function (layer, index) {
+					  return {layer:layer.layer, title:"Legend 05/14/15"};
+					});
+					if (layerInfo.length > 0) {
+					  legendDijit = new Legend({
+						map: map,
+						layerInfos: layerInfo
+					  }, "legendDiv");
+					  legendDijit.startup();
+					  var dnd = new Moveable(dom.byId("legendDiv"));
+					}
+				});
+				
+				on(dom.byId("legendDiv"), mouse.enter, function(){
+					domClass.add("legendDiv", "hoverClass");
+				});
+
+				on(dom.byId("legendDiv"), mouse.leave, function(){
+					domClass.remove("legendDiv", "hoverClass");
+				});
 
 		     });
 		     function doFind() {
+				standby.show();
+				map.graphics.clear();
+				var visLayer = ["Better Beginnings",
+                                "Child Care Development Fund",
+                                "Special Nutrition Programs",
+                                "Arkansas Better Chance Programs",
+                                "Child Care Facilities",
+                                "Head Start",
+                                "",
+                                "Senate District",
+                                "House District",
+                                "Congressional District", "Zip Code", "School District", "City", "County"];
 
-		         //var visLayer = ["SNP", "ABC", "CCF", "HS"];
-		         var visLayer = ["BB", "SNP", "ABC", "CCF", "HS", "ROAD", "Senate_Dis", "House_Dist", "Cong_Distr", "ARC_Zip", "School_Dis", "ARC_City"];
 		         //Set the search text to the value in the box
-		         var srchfield = dojo.byId("fieldval").value;
-		         var position = dojo.lastIndexOf(visLayer, srchfield);
+		        var srchfield = visLayer[dojo.byId("searchParameter").value];
+				if(srchfield == ""){
+					alert("Please select a search field.");
+					return false;
+				}
+		        var position = dojo.byId("searchParameter").value;	
 
-		         findParams.searchFields = [srchfield];
-		         var lid = dojo.byId("program").value;
-		         findParams.layerIds = [lid];
-		         findParams.contains = false;
-		         map._layers.aecam.setVisibleLayers([lid, 5, position, 88]);
-		         identifyParams.layerIds = [lid];
-		         findParams.searchText = dojo.byId("name").value.toUpperCase();
-		         findTask.execute(findParams, showResults, errorSrch);
+		        var lid = dojo.byId("program").value;
+		        findParams.layerIds = [lid, position];
+		        findParams.contains = false;
+		        aecam.setVisibleLayers([parseInt(lid), 6, 11, parseInt(position), 79]);
+		        identifyParams.layerIds = [lid];
+				findParams.searchText = dojo.byId("termSearch").value;
+		        findTask.execute(findParams, showResults, errorSrch);
 		     }
-		     function showResults(results) {
+			 function showResults(results) {		
+						
+				var geographySymbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, 
+					new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+					new Color([98,194,204]), 1), new Color([98,194,204,0.2])
+				);
+				
+				var facilitiesSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 20,
+					new SimpleLineSymbol(SimpleLineSymbol.STYLE_SHORTDOT,
+					new Color([0, 0, 0]), 1), new Color([255, 255, 255, .2])
+				);
+				
+				selectTab('srchResults');
+				var searchArea = document.getElementById('program');
+				var searchField = document.getElementById('searchParameter');
+				var searchVal = dojo.byId('termSearch').value;
+				var searchString = searchArea.options[searchArea.selectedIndex].text + " by " + searchField.options[searchField.selectedIndex].text + " : " + searchVal;
+				
+				var items = dojo.map(results, function (result) {
+					var graphic = new Graphic(result.feature.toJson());
+					
+					if( result.geometryType == "esriGeometryPolygon"){
+						graphic.setSymbol(geographySymbol);
+						
+					}else{
+						graphic.setSymbol(facilitiesSymbol);
+													
+					}							
+					map.graphics.add(graphic);
+					return result;
+				});
+				
+				
+				var geographyLayer = arrayUtils.filter(items, function(item){
+					
+					return item.feature.geometry.type == "polygon";
+					
+				});
+				
+				if(geographyLayer.length >= 1){
+					for (var i = 0, il = geographyLayer.length; i < il; i++){							
+						if (i==0){
+							var geoExtent = new Extent(geographyLayer[i].feature.geometry.getExtent());
+						}
+						geoExtent = geoExtent.union(geographyLayer[i].feature.geometry.getExtent());
+					}
+				
+				}
+				
+				var pointsLayer = arrayUtils.filter(items, function(item){
+					
+					return item.feature.geometry.type == "point";
+					
+				});
 
-		         if (results.length == 0) {
-		             alert('No results found. Please try again.');
-		             resetMap();
-		             return false;
-		         } else {
-		             selectTab('srchResults');
-		             dojo.byId('rec_count').innerHTML = results.length + ' records found.';
-		         }
-		         map.graphics.clear();
-		         var symbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 10,
-							new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
-							new Color([0, 0, 0]), 1),
-							new Color([255, 255, 0, 1]));
-
-		         var items = dojo.map(results, function (result) {
-		             var graphic = new Graphic(result.feature.toJson());
-		             //var graphic = result.feature;
-		             graphic.setSymbol(symbol);
-		             map.graphics.add(graphic);
-		             return result.feature.attributes;
-		         });
-
-		         var maxx = 0;
-		         var maxy = 0;
-		         var miny, minx;
-		         for (var i = 0, il = map.graphics.graphics.length; i < il; i++) {
-		             var currentGraphic = map.graphics.graphics[i];
-		             if (i == 0) {
-		                 minx = currentGraphic.geometry.x;
-		                 miny = currentGraphic.geometry.y;
-		             } else {
-		                 if (currentGraphic.geometry.x < minx)
-		                     minx = currentGraphic.geometry.x;
-		                 if (currentGraphic.geometry.y < miny)
-		                     miny = currentGraphic.geometry.y;
-		             }
-		             if (currentGraphic.geometry.x > maxx)
-		                 maxx = currentGraphic.geometry.x;
-		             if (currentGraphic.geometry.y > maxy)
-		                 maxy = currentGraphic.geometry.y;
-		         }
-
-		         extent = pointToExtent(map, maxx, maxy, minx, miny, 10)
-		         map.setExtent(extent);
-
-		         //Create data object to be used in store
-		         var data = {
-		             identifier: "OBJECTID",  //This field needs to have unique values
-		             label: "OBJECTID", //Name field for display. Not pertinent to a grid but may be used elsewhere.
-		             items: items
-		         };
-
-		         //Create data store and bind to grid.
-		         store = new ItemFileReadStore({ data: data });
-		         grid = dijit.byId('grid');
-		         grid.setStore(store);
-
-		         grid.layout.setColumnVisibility(0, false);
-		         dijit.byId('btnPrint').set('disabled', '');
-		     }
+				var storeAttributes = dojo.map(pointsLayer, function(pointLayer){						
+					
+					return pointLayer.feature.attributes;
+				});
+				
+				dojo.byId('rec_count').innerHTML = searchString + ".<br/> " +pointsLayer.length + ' records found.';
+				
+				if( pointsLayer.length >0 ){
+					var maxx = 0;
+					var maxy = 0;
+					var miny, minx;
+					for (var i = 0, il = pointsLayer.length; i < il; i++) {
+						var currentGraphic = pointsLayer[i].feature;
+						if (i == 0) {
+							minx = currentGraphic.geometry.x;
+							miny = currentGraphic.geometry.y;
+							} else {
+							if (currentGraphic.geometry.x < minx)
+							minx = currentGraphic.geometry.x;
+							if (currentGraphic.geometry.y < miny)
+							miny = currentGraphic.geometry.y;
+						}
+						if (currentGraphic.geometry.x > maxx)
+						maxx = currentGraphic.geometry.x;
+						if (currentGraphic.geometry.y > maxy)
+						maxy = currentGraphic.geometry.y;
+					}
+					extent = pointToExtent(map, maxx, maxy, minx, miny, 10);
+					geoExtent = geoExtent.union(extent);							
+				}
+				
+				map.setExtent(geoExtent);
+				
+				
+				
+				//Create data object to be used in store
+				var data = {
+					identifier: "OBJECTID",  //This field needs to have unique values
+					label: "OBJECTID", //Name field for display. Not pertinent to a grid but may be used elsewhere.
+					items: storeAttributes
+				};
+				
+				//Create data store and bind to grid.
+				store = new ItemFileReadStore({ data: data, clearOnClose: 'Yes' });
+				grid = dijit.byId('grid');
+				grid.setStore(store);
+				
+				grid.layout.setColumnVisibility(0, false);
+					
+				dijit.byId('btnPrint').set('disabled', '');
+				legendDijit.refresh();
+				standby.hide();
+			}
+			 
 		     function pointToExtent(map, pointX, pointY, minX, minY, toleranceInPixel) {
 		         var pixelWidth = map.extent.getWidth() / map.width;
 		         var toleraceInMapCoords = toleranceInPixel * pixelWidth;
@@ -298,7 +479,7 @@
 							      "label": "Landscape (PDF)",
 							      "format": "pdf",
 							      "options": {
-							          "legendLayers": [], // empty array means no legend
+							          //"legendLayers": aecam.visibleLayers, // empty array means no legend
 							          "scalebarUnit": "Miles",
 							          "titleText": printTitle + ", Landscape PDF"
 							      }
@@ -307,7 +488,7 @@
 							      "label": "Portrait (Image)",
 							      "format": "jpg",
 							      "options": {
-							          "legendLayers": [],
+							          //"legendLayers": [],
 							          "scaleBarUnit": "Miles",
 							          "titleText": printTitle + ", Portrait JPG"
 							      }
@@ -339,11 +520,12 @@
 		             "map": map,
 		             "templates": templates,
 		             "asynch": false,
-		             url: "http://argis.ualr.edu/ieagis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task"
+		             url: "//argis.ualr.edu/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task"
 		         }, dojo.byId("printButton"));
 		         printer.startup();
 
 		         dojo.connect(printer, "onPrintStart", function () {
+					legendDijit.refresh();
 		             this.templates[0].layoutOptions.titleText = dojo.byId("map_name").value;
 		         });
 		     }
@@ -354,9 +536,10 @@
 		         dojo.byId('rec_count').innerHTML = "";
 		         dojo.byId('map_name').value = "AECAM";
 		         map.setExtent(initialExtent);
-		         map.graphics.clear();
-		         map._layers.aecam.setVisibleLayers([5, 88]);
+		         map.graphics.clear();				 
+		         aecam.setVisibleLayers([5, 78]);
 		         identifyParams.layerIds = map._layers.aecam.visibleLayers;
+				 legendDijit.refresh();
 		     }
 		     function clearGrid() {
 		         var newStore = new ItemFileReadStore({ data: { identifier: "", items: []} });
@@ -396,12 +579,13 @@
             function setPrintTitle() {
                 //alert(document.getElementById('program').options[document.getElementById('program').selectedIndex].text);
                 var searchArea = document.getElementById('program');
-                var searchField = document.getElementById('fieldval');
-                var searchVal = dojo.byId('name').value;
+                var searchField = document.getElementById('searchParameter');
+                var searchVal = dojo.byId('termSearch').value;
 
                 var searchString = searchArea.options[searchArea.selectedIndex].text + " by " + searchField.options[searchField.selectedIndex].text + " : " + searchVal;
 
                 dojo.byId('map_name').value = searchString;
+				dojo.byId('rec_count').innerHTML = searchString;
             }
             function handleError(err) {
                 console.log("Something broke: ", err);
@@ -415,7 +599,7 @@
                 }
                 identifyParams.mapExtent = map.extent;
                 identifyParams.layerIds = map._layers.aecam.visibleLayers;
-
+				
                 var deferred = identifyTask.execute(identifyParams);
 
                 deferred.addCallback(function (response) {
@@ -424,12 +608,17 @@
                     return dojo.map(response, function (result) {
                         var feature = result.feature;
                         feature.attributes.layerName = result.layerName;
+						feature.geometry.spatialReference = map.spatialReference;
                         var template = new esri.InfoTemplate();
                         template.setTitle(feature.attributes.layerName);
                         //alert(result.layerName);
                         switch (result.layerName) {
-                            case 'Better_Beginnings':
+                            case 'Better Beginnings':
                                 template.setContent(getBBContent);
+                                feature.setInfoTemplate(template);
+                                break;
+                            case 'Child Care Development Fund':
+                                template.setContent(getCCDContent);
                                 feature.setInfoTemplate(template);
                                 break;
                             case 'Special Nutrition Programs':
@@ -440,11 +629,11 @@
                                 template.setContent(getABCContent);
                                 feature.setInfoTemplate(template);
                                 break;
-                            case 'ChildCare Facilities':
+                            case 'Child Care Facilities':
                                 template.setContent(getCCFContent);
                                 feature.setInfoTemplate(template);
                                 break;
-                            case 'Head_Start':
+                            case 'Head Start':
                                 template.setContent(getHSContent);
                                 feature.setInfoTemplate(template);
                                 break;
@@ -519,9 +708,9 @@
                     onComplete: function (items) {
                         dojo.forEach(items, function (item, index) {
                             //if(item.ProviderNa)
-                            win.document.write('<tr><td>' + item.ProviderNa + '</td><td>' + item.ARC_Addres + '</td><td>' + item.ARC_City + '</td></tr>');
+                            win.document.write('<tr><td>' + item.ProviderNa + '</td><td>' + item.Address + '</td><td>' + item.ARC_City + '</td></tr>');
                             //else
-                            //	win.document.write('<tr><td>' + item.providerna + '</td><td>' + item.ARC_Addres + '</td><td>' + item.ARC_City + '</td></tr>');
+                            //	win.document.write('<tr><td>' + item.providerna + '</td><td>' + item.Address + '</td><td>' + item.ARC_City + '</td></tr>');
                         });
                     }
                 });
@@ -539,7 +728,7 @@
             dojo.byId('map_name').value = "AECAM";
             map.setExtent(initialExtent);
             map.graphics.clear();
-            map._layers.aecam.setVisibleLayers([5, 88]);
+            map._layers.aecam.setVisibleLayers([5, 78]);
             identifyParams.layerIds = map._layers.aecam.visibleLayers;
             }*/
             function selectTab(tab) {
@@ -554,38 +743,42 @@
                 content = "<table>";
                 //content += "<tr><td>Program:</td><td>" + graphic.attributes.layerName + " </td></tr>";
                 content += "<tr><td>Provider Name:</td><td>" + graphic.attributes.ProviderNa + " </td></tr>";
-                content += "<tr><td>Address:</td><td>" + graphic.attributes.ARC_Addres + "</td></tr>";
-                content += "<tr><td></td><td>" + graphic.attributes.ARC_City + ", " + graphic.attributes.ARC_State + " " + graphic.attributes.ARC_Zip + "</td></tr>";
+                content += "<tr><td>Address:</td><td>" + graphic.attributes.Address + "</td></tr>";
+                content += "<tr><td></td><td>" + graphic.attributes.ARC_City + ", " + graphic.attributes.ARC_State + " " + graphic.attributes.Zip + "</td></tr>";
                 content += "<tr><td>Facility Type:</td><td>" + graphic.attributes.FacilityTy + "</td></tr>";
-                content += "<tr><td>State House Rep:</td><td><a target='_new' href='" + graphic.attributes.House_Web + "'>" + graphic.attributes.House_Rep + "</a></td></tr>";
+                /*content += "<tr><td>State House Rep:</td><td><a target='_new' href='" + graphic.attributes.House_Web + "'>" + graphic.attributes.House_Rep + "</a></td></tr>";
                 content += "<tr><td>State Senator:</td><td><a target='_new' href='" + graphic.attributes.Senate_Web + "'>" + graphic.attributes.Senator + "</a></td></tr>";
-                content += "<tr><td>US House Rep:</td><td><a target='_new' href='" + graphic.attributes.Cong_Web + "'>" + graphic.attributes.Cong_Rep + "</a></td></tr>";
+                content += "<tr><td>US House Rep:</td><td><a target='_new' href='" + graphic.attributes.Cong_Web + "'>" + graphic.attributes.Cong_Rep + "</a></td></tr>";*/
                 content += "</table>";
                 return content;
             }
-            function getSNPContent(graphic) {
+            function getCCDContent(graphic) {
                 content = "<table>";
                 content += "<tr><td>Program:</td><td>" + graphic.attributes.layerName + " </td></tr>";
                 content += "<tr><td>Provider Name:</td><td>" + graphic.attributes.ProviderNa + " </td></tr>";
-                content += "<tr><td>Address:</td><td>" + graphic.attributes.ARC_Addres + "</td></tr>";
-                content += "<tr><td></td><td>" + graphic.attributes.ARC_City + ", " + graphic.attributes.ARC_State + " " + graphic.attributes.ARC_Zip + "</td></tr>";
+                content += "<tr><td>Address:</td><td>" + graphic.attributes.Address + "</td></tr>";
+                content += "<tr><td></td><td>" + graphic.attributes.ARC_City + ", " + graphic.attributes.ARC_State + " " + graphic.attributes.Zip + "</td></tr>";
                 content += "<tr><td>Facility Type:</td><td>" + graphic.attributes.FacilityTy + "</td></tr>";
-                content += "<tr><td>State House Rep:</td><td><a target='_new' href='" + graphic.attributes.House_Web + "'>" + graphic.attributes.House_Rep + "</a></td></tr>";
+                content += "<tr><td>License Type:</td><td>" + graphic.attributes.LicenseTyp + "</td></tr>";
+                content += "<tr><td>Quality:</td><td>" + graphic.attributes.Quality + "</td></tr>";
+                content += "<tr><td>Quality Level:</td><td>" + graphic.attributes.QualityLev + "</td></tr>";
+                content += "<tr><td>Head Start:</td><td>" + graphic.attributes.HeadStart + "</td></tr>";
+                /*content += "<tr><td>State House Rep:</td><td><a target='_new' href='" + graphic.attributes.House_Web + "'>" + graphic.attributes.House_Rep + "</a></td></tr>";
                 content += "<tr><td>State Senator:</td><td><a target='_new' href='" + graphic.attributes.Senate_Web + "'>" + graphic.attributes.Senator + "</a></td></tr>";
-                content += "<tr><td>US House Rep:</td><td><a target='_new' href='" + graphic.attributes.Cong_Web + "'>" + graphic.attributes.Cong_Rep + "</a></td></tr>";
+                content += "<tr><td>US House Rep:</td><td><a target='_new' href='" + graphic.attributes.Cong_Web + "'>" + graphic.attributes.Cong_Rep + "</a></td></tr>";*/
                 content += "</table>";
                 return content;
             }
             function getABCContent(graphic) {
                 content = "<table>";
                 content += "<tr><td>Program:</td><td>" + graphic.attributes.layerName + " </td></tr>";
-                content += "<tr><td>Provider Name:</td><td>" + graphic.attributes.Name + " </td></tr>";
-                content += "<tr><td>Address:</td><td>" + graphic.attributes.ARC_Addres + "</td></tr>";
-                content += "<tr><td></td><td>" + graphic.attributes.ARC_City + ", " + graphic.attributes.ARC_State + " " + graphic.attributes.ARC_Zip + "</td></tr>";
+                content += "<tr><td>Provider Name:</td><td>" + graphic.attributes.ProviderNa + " </td></tr>";
+                content += "<tr><td>Address:</td><td>" + graphic.attributes.Address + "</td></tr>";
+                content += "<tr><td></td><td>" + graphic.attributes.ARC_City + ", " + graphic.attributes.ARC_State + "</td></tr>";
                 content += "<tr><td>Facility Type:</td><td>" + graphic.attributes.FacilityTy + "</td></tr>";
-                content += "<tr><td>State House Rep:</td><td><a target='_new' href='" + graphic.attributes.House_Web + "'>" + graphic.attributes.House_Rep + "</a></td></tr>";
+                /*content += "<tr><td>State House Rep:</td><td><a target='_new' href='" + graphic.attributes.House_Web + "'>" + graphic.attributes.House_Rep + "</a></td></tr>";
                 content += "<tr><td>State Senator:</td><td><a target='_new' href='" + graphic.attributes.Senate_Web + "'>" + graphic.attributes.Senator + "</a></td></tr>";
-                content += "<tr><td>US House Rep:</td><td><a target='_new' href='" + graphic.attributes.Cong_Web + "'>" + graphic.attributes.Cong_Rep + "</a></td></tr>";
+                content += "<tr><td>US House Rep:</td><td><a target='_new' href='" + graphic.attributes.Cong_Web + "'>" + graphic.attributes.Cong_Rep + "</a></td></tr>";*/
                 content += "</table>";
                 return content;
             }
@@ -593,13 +786,27 @@
                 content = "<table>";
                 content += "<tr><td>Program:</td><td>" + graphic.attributes.layerName + " </td></tr>";
                 content += "<tr><td>Provider Name:</td><td>" + graphic.attributes.ProviderNa + " </td></tr>";
-                content += "<tr><td>Address:</td><td>" + graphic.attributes.ARC_Addres + "</td></tr>";
-                content += "<tr><td></td><td>" + graphic.attributes.ARC_City + ", " + graphic.attributes.ARC_State + " " + graphic.attributes.ARC_Zip + "</td></tr>";
+                content += "<tr><td>Address:</td><td>" + graphic.attributes.Address + "</td></tr>";
+                content += "<tr><td></td><td>" + graphic.attributes.ARC_City + ", " + graphic.attributes.ARC_State + " " + graphic.attributes.Zip + "</td></tr>";
                 content += "<tr><td>Facility Type:</td><td>" + graphic.attributes.FacilityTy + "</td></tr>";
                 content += "<tr><td>License Type:</td><td>" + graphic.attributes.LicenseTyp + "</td></tr>";
-                content += "<tr><td>State House Rep:</td><td><a target='_new' href='" + graphic.attributes.House_Web + "'>" + graphic.attributes.House_Rep + "</a></td></tr>";
+                /*content += "<tr><td>State House Rep:</td><td><a target='_new' href='" + graphic.attributes.House_Web + "'>" + graphic.attributes.House_Rep + "</a></td></tr>";
                 content += "<tr><td>State Senator:</td><td><a target='_new' href='" + graphic.attributes.Senate_Web + "'>" + graphic.attributes.Senator + "</a></td></tr>";
-                content += "<tr><td>US House Rep:</td><td><a target='_new' href='" + graphic.attributes.Cong_Web + "'>" + graphic.attributes.Cong_Rep + "</a></td></tr>";
+                content += "<tr><td>US House Rep:</td><td><a target='_new' href='" + graphic.attributes.Cong_Web + "'>" + graphic.attributes.Cong_Rep + "</a></td></tr>";*/
+                content += "</table>";
+                return content;
+            }
+            function getSNPontent(graphic) {
+                content = "<table>";
+                content += "<tr><td>Program:</td><td>" + graphic.attributes.layerName + " </td></tr>";
+                content += "<tr><td>Provider Name:</td><td>" + graphic.attributes.ProviderNa + " </td></tr>";
+                content += "<tr><td>Address:</td><td>" + graphic.attributes.Address + "</td></tr>";
+                content += "<tr><td></td><td>" + graphic.attributes.ARC_City + ", " + graphic.attributes.ARC_State + " " + graphic.attributes.Zip + "</td></tr>";
+                content += "<tr><td>Facility Type:</td><td>" + graphic.attributes.FacilityTy + "</td></tr>";
+                content += "<tr><td>License Type:</td><td>" + graphic.attributes.LicenseTyp + "</td></tr>";
+                /*content += "<tr><td>State House Rep:</td><td><a target='_new' href='" + graphic.attributes.House_Web + "'>" + graphic.attributes.House_Rep + "</a></td></tr>";
+                content += "<tr><td>State Senator:</td><td><a target='_new' href='" + graphic.attributes.Senate_Web + "'>" + graphic.attributes.Senator + "</a></td></tr>";
+                content += "<tr><td>US House Rep:</td><td><a target='_new' href='" + graphic.attributes.Cong_Web + "'>" + graphic.attributes.Cong_Rep + "</a></td></tr>";*/
                 content += "</table>";
                 return content;
             }
@@ -607,13 +814,13 @@
                 content = "<table>";
                 content += "<tr><td>Program:</td><td>" + graphic.attributes.layerName + " </td></tr>";
                 content += "<tr><td>Provider Name:</td><td>" + graphic.attributes.ProviderNa + " </td></tr>";
-                content += "<tr><td>Address:</td><td>" + graphic.attributes.ARC_Addres + "</td></tr>";
-                content += "<tr><td></td><td>" + graphic.attributes.ARC_City + ", " + graphic.attributes.ARC_State + " " + graphic.attributes.ARC_Zip + "</td></tr>";
+                content += "<tr><td>Address:</td><td>" + graphic.attributes.Address + "</td></tr>";
+                content += "<tr><td></td><td>" + graphic.attributes.ARC_City + ", " + graphic.attributes.ARC_State + " " + graphic.attributes.Zip + "</td></tr>";
                 content += "<tr><td>Facility Type:</td><td>" + graphic.attributes.FacilityTy + "</td></tr>";
-                content += "<tr><td>License Type:</td><td>" + graphic.attributes.LicenseTyp + "</td></tr>";
+                /*content += "<tr><td>License Type:</td><td>" + graphic.attributes.LicenseTyp + "</td></tr>";
                 content += "<tr><td>State House Rep:</td><td><a target='_new' href='" + graphic.attributes.House_Web + "'>" + graphic.attributes.House_Rep + "</a></td></tr>";
                 content += "<tr><td>State Senator:</td><td><a target='_new' href='" + graphic.attributes.Senate_Web + "'>" + graphic.attributes.Senator + "</a></td></tr>";
-                content += "<tr><td>US House Rep:</td><td><a target='_new' href='" + graphic.attributes.Cong_Web + "'>" + graphic.attributes.Cong_Rep + "</a></td></tr>";
+                content += "<tr><td>US House Rep:</td><td><a target='_new' href='" + graphic.attributes.Cong_Web + "'>" + graphic.attributes.Cong_Rep + "</a></td></tr>";*/
                 content += "</table>";
                 return content;
             }
@@ -670,7 +877,7 @@
             function getCongContent(graphic) {
                 content = "<table>";
                 content += "<tr><td>Congressional District:</td><td>" + graphic.attributes.DISTRICT + " </td></tr>";
-                content += "<tr><td>Congressional Represeantative:</td><td>" + graphic.attributes.REPRESENTA + " </td></tr>";
+                //content += "<tr><td>Congressional Represeantative:</td><td>" + graphic.attributes.REPRESENTA + " </td></tr>";
                 content += "<tr><td>District Population (2011):</td><td>" + graphic.attributes.POP_2011 + " </td></tr>";
                 content += "</table>";
                 return content;
@@ -705,7 +912,12 @@
     </head>
 	<body class="claro">
 	<div class="bg_pg2">
-		<center><span id="headerimg"><img  style="margin-left:auto;margin-right:auto;" src="content/images/bg_Title_02.jpg" width="1100" height="106" border="0"></span></center>
+		<span id="headerimg">
+			<img  style="margin-left:10px;" src="content/images/dccece_full_logo.png" height="100" border="0" >
+			<!--span style="margin-left:auto; margin-right:auto;font-size:x-large;font-family: Tahoma,Arial,Helvetica,sans-serif;">AECAM</span-->
+			<img  style="margin-left:500px;" src="content/images/AECAM_logo_AR.png" height="100" border="0" >
+			<!--img  style="float:right;margin-top:20px;margin-right:20px;" src="content/images/better_beginnings_2.jpg" height="67" border="0" -->
+		</span>
         <table class="header" width="100%" border="1" cellspacing="0" cellpadding="0"><tr><td>
         <center>
 		    <table width="1300" border="0" cellspacing="0" cellpadding="0">
@@ -733,24 +945,31 @@
 							<td>Search:</td>
 						<td><select id="program" >
                           <option value="0">Better Beginnings Programs</option>
-						  <option value="1">Special Nutrition Programs</option>
-						  <option value="2">Arkansas Better Chance</option>
-						  <option value="3">Child Care Facilities</option>
-						  <option value="4">Head Start Facilities</option>				  
+						  <option value="1">Child Care Development Fund</option>
+                          <option value="2">Special Nutrition Programs</option>
+						  <option value="3">Arkansas Better Chance Programs</option>
+						  <option value="4">Child Care Facilities</option>
+						  <option value="5">Head Start Facilities</option>			  
 						</select><br/></td></tr>
 						<tr><td>On field:</td>
-						<td><select id="fieldval">
-						  <option value="ARC_City">City</option>
-						  <option value="ARC_Zip">Zip Code</option>
-						  <option value="School_Dis">School District</option>
-						  <option value="House_Dist">AR House Dist</option>				  
-						  <option value="Senate_Dis">AR Senate Dist</option>
-						  <option value="Cong_Distr">US Congressional Dist</option>
+						<td><select id="searchParameter">		
+						  <option value="">--Select a Geography to Search--</option>
+                          <option value="11">City</option>
+						  <option value="10">Zip Code</option>
+						  <option value="79">County</option>						  
+						  <option value="12">School District</option>
+						  <option value="8">House District</option>				  
+						  <option value="7">Senate District</option>
+						  <option value="9">Congressional District</option>
 						</select><br/></td></tr>
-						<tr><td>For value:</td>
-							<!--td><input type="text" id="name" name="name" value="Pine Bluff" /></td></tr><tr><td> <button type="button" id="searchButton" onclick="doFind();">Search</button></td-->
-							<td><input type="text" id="name" name="name" value="Pine Bluff" /></td></tr><tr><td> <button type="button" id="searchButton">Search</button></td>
-						</tr></table>	
+						<tr>
+							<td>For value:</td>
+							<td><input id="termSearch" dojoType="dijit.form.FilteringSelect" ignoreCase="true" searchAttr="TEXT" name="termSearch" pageSize="20" fetchProperties="{sort:[{attribute:'TEXT', descending:false}]}" placeHolder="Select a value"/></td>
+						</tr>
+						<tr>
+							<td> <button type="button" id="searchButton">Search</button></td>
+						</tr>
+					</table>	
 					</div>
 					<div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'top'" title="Search Results" style="height:40px;" id='srchResults'>
                         <div id='rec_count'></div>
@@ -759,7 +978,7 @@
 							<tr>
 							  <th field="OBJECTID">ID</th>
 							  <th field="ProviderNa" >Name</th>
-							  <th field="ARC_Addres">Address</th>
+							  <th field="Address">Address</th>
 							  <th field="ARC_City ">City</th>
 							</tr>
 						  </thead>
@@ -777,8 +996,9 @@
 						<button data-dojo-type="dijit.form.Button" data-dojo-props="iconClass:'dijitEditorIconPaste', showLabel: true" onclick="navToolbar.zoomToPrevExtent();" type="button">Previous Extent</button>
 						<!--button data-dojo-type="dijit.form.Button" data-dojo-props="iconClass:'dijitPrintIcon', showLabel: true" onclick="resetMap();selectTab('accToc');" type="button">Reset Map</button-->
 						<button data-dojo-type="dijit.form.Button" data-dojo-props="iconClass:'dijitPrintIcon', showLabel: true" id="resetBtn"  type="button">Reset Map</button>						
-				</span>
-            </div>
+				</span>				
+			</div>
+			<span id="legendDiv" region="center" style="padding:10px;float:right;z-index:100;position:absolute;top:80px;right:120px;border-style: outset; border-width:1px; background-color:  #d3d3d3"></span>
         </div>
 	<div  class="footer">
     <table width="1100px" border="0" align="center" cellpadding="10" cellspacing="0">
@@ -788,7 +1008,7 @@
      </tr>
      <tr>
 		<td colspan="2" align="center">©
-        <span id="year">2014</span> Arkansas Early Childhood Asset Map</td>
+        <span id="year">2015</span> Arkansas Early Childhood Asset Map</td>
         </tr>
     </tbody></table>
 	</div>

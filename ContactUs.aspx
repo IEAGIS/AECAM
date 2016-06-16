@@ -9,19 +9,20 @@
                 &nbsp;
             </td>
             <td style="text-align:center; font-size:x-large;">
-                <strong>Contact for DHS</strong><br />
+                <br /><strong>Contact for DHS</strong><br />
                 Justin Foster<br />
                 (501) 320-8985<br />
-                <a href="mailto:Justin.Foster@arkansas.gov?subject=AECAM Resource Guide">Justin.Foster@arkansas.gov</a>
+                <a href="mailto:Justin.Foster@dhs.arkansas.gov?subject=AECAM Resource Guide">Justin.Foster@dhs.arkansas.gov</a><br /><br />
             </td>
             <td>
                 &nbsp;
             </td>
             <td style="text-align:center; font-size:x-large;">
                 <strong>Contact for UAMS</strong><br />
-                Talitha VanHook<br />
-                (501) 686-5204<br />
-                <a href="mailto:communityresources@uams.edu?subject=AECAM Resource Guide">communityresources@uams.edu</a>
+                Michelle Trulsrud<br />
+                Technical Assistance Specialist<br />
+                <!--a href="http://www.tipsforgreatkids.com">TIPS for Great Kids</a><br /-->
+                <a href="mailto:mtrulsrud@uams.edu?subject=AECAM Resource Guide">mtrulsrud@uams.edu</a>
             </td>
         </tr>
     </table>

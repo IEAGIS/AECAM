@@ -17,7 +17,7 @@ public partial class AECAMResults : System.Web.UI.Page
         {
 
             case "ABC":
-                ObjectDataSource1.TypeName = "DHSDataSetTableAdapters.ABCTableAdapter";
+                ObjectDataSource1.TypeName = "DHSDataSetTableAdapters.ABCSitesTableAdapter";
                 break;
             case "CCF":
                 ObjectDataSource1.TypeName = "DHSDataSetTableAdapters.CFTableAdapter";

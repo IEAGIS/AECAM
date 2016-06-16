@@ -3,7 +3,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
     <title>Community Resources</title>
     <link href="Content/Css/Themes/jquery-ui-1.8.21.custom.css" rel="stylesheet" type="text/css" />
-    <script type="text/javascript"src="http://maps.google.com/maps/api/js?sensor=false"></script>
+    <script type="text/javascript"src="//maps.google.com/maps/api/js?sensor=false"></script>
     <script src="Scripts/jquery-ui-1.8.21.custom.min.js" type="text/javascript"></script>
     <script src="Scripts/utils.js" type="text/javascript"></script>
     <script src="Scripts/aecamSearch.js" type="text/javascript"></script>
@@ -131,25 +131,18 @@
     </map>
     <h2>Search AECAM Data</h2>
     <div class="demo" style="height:auto">
-        <div style="float:right; position:relative; top:-50px; z-index:500"><img alt="hands" class="outline" src="Content/images/Hand_Banner.png" /></div>
-        <div style="padding-top: 1em;padding-right: 1.4em;padding-bottom: 1em;padding-left: 1.4em;">
-            <label for="address">Show driving directions from My Address: </label><br /><input type="text" size="60" id="address" name="address" />
-            <button onclick="geocodeAddress($('#address').val());setAddress();return false;">Set Address</button><br />
-            <br />(Ex. 2801 S University, Little Rock, AR 72204)<br /><br />
 
-            <font style="color:Gray; font-size:smaller" >Note: The address you provide is not recorded, it will only be used to provide distance related information.</font>                        
-            <br /><br /><br />
         </div>
-        <div class="tab-set">
-            <ul class="tabs clearfix">
+        <div>
+            <!--ul class="tabs clearfix">
 	            <li><a href="#tabs-ABC">Arkansas Better Chance</a></li>
 	            <li><a href="#tabs-CCF">Child Care Facilities</a></li>
 	            <li><a href="#tabs-SNP">Special Nutrition Programs</a></li>
                 <li><a href="#tabs-HS">Head Start Facilities</a></li>
                 <li><a href="#tabs-BB">Better Beginnings</a></li>
                 <li><a href="#tabs-RES">Resources</a></li>
-            </ul>
-	        <div id="tabs-ABC">
+            </ul -->
+	        <!--div id="tabs-ABC">
                 <strong>The Arkansas Better Chance program is funded through an appropriation in the Arkansas Department of Education (ADE) Public School Fund budget. ADE contracts with the DHS Division of Child Care and Early Childhood Education to administer the program. The Division is responsible for all operational duties associated with ABC. The State Board of Education is the final authority for approval of rules and grants. The Division gives regular reports and updates to the State Board of Education, as well as an annual report to the Joint Legislative Committee on Education.</strong>
                 <br /><br />
                 <fieldset>
@@ -172,7 +165,7 @@
                     <hr /> 
                     <p><strong>Other Arkansas Better Chance Resources</strong>
                     <ul>
-                        <li><a target="_new" href='http://humanservices.arkansas.gov/dccece/Pages/ArkansasBetterChance.aspx'>Arkansas Better Chance Program</a></li>
+                        <li><a target="_new" href='//humanservices.arkansas.gov/dccece/Pages/ArkansasBetterChance.aspx'>Arkansas Better Chance Program</a></li>
                     </ul>
                 </p>   
 	        </div>
@@ -197,7 +190,7 @@
                         </iframe>
                     </p> 
                 </center--> 
-                <p>
+                <!--p>
                     <br /><strong>Source:</strong> Arkansas Department of Human Services
                 </p>                        
                 <hr />
@@ -257,7 +250,7 @@
                 <hr />
                 <p><strong>Other Head Start Facilities Resources</strong>
                     <ul>
-                        <li><a target="_new" href='http://arheadstart.org/index.php?option=com_weblinks&view=category&id=155'>Arkansas Head Start Association</a></li>
+                        <li><a target="_new" href='//arheadstart.org/index.php?option=com_weblinks&view=category&id=155'>Arkansas Head Start Association</a></li>
                     </ul>
                 </p>                           
 	        </div>
@@ -286,7 +279,7 @@
                         <li><a target="_new" href='http://www.arbetterbeginnings.com/'>Arkansas Better Beginnings</a></li>
                     </ul>
                 </p>                           
-	        </div>
+	        </div -->
             <div id="tabs-RES">                
                 <p><strong>Search Tips</strong></p>
                 <ul>
@@ -327,18 +320,30 @@
                         </td>                                
                     </tr>                            
                     <tr><td colspan=3><br /><br />
-                    <strong>Source:</strong> UAMS Family and Preventive Medicine / TIPS for Great Kids Program 
+                    <strong>Source:</strong> UAMS Family and Preventive Medicine
                     <hr />
+                    <!--fieldset style="width:100%;">
+                        <legend>Driving Directions:</legend>
+                        <div style="float:right; position:relative; top:-10px; z-index:500"><img alt="hands" class="outline" src="Content/images/Hand_Banner.png" /></div>
+                        <div style="padding-top: 1em;padding-right: 1.4em;padding-bottom: 1em;padding-left: 1.4em;">
+                            <label for="address">Show driving directions from My Address: </label><br /><input type="text" size="60" id="address" name="address" />
+                            <button onclick="geocodeAddress($('#address').val());setAddress();return false;">Set Address</button><br />
+                            <br />(Ex. 2801 S University, Little Rock, AR 72204)<br /><br />
+
+                            <font style="color:Gray; font-size:smaller" >Note: The address you provide is not recorded, it will only be used to provide distance related information.</font>                                               
+                        </div>                                                                   
+                    </fieldset-->
                     <p><strong>Other Child Care Facilities Resources</strong>
                     <ul>
                         <li><a target="_new" href='http://reachoutandreadarkansas.org/'>Reach Out and Read Arkansas</a></li>
                         <li><a target="_new" href='http://www.arkansased.org/contact-us/education-service-cooperatives'>Education Service Cooperatives</a></li>
                         <li><a target="_new" href='http://humanservices.arkansas.gov/ddds/Pages/FirstConnectionsProgram.aspx'>First Connections - Arkansas Infant and Toddler Program</a></li>
+                        <li><a target="_new" href='http://arbetterbeginnings.com/'>Better Beginnings</a></li>
+                        
                     </ul>
                     </p></td></tr>                            
                     </table>
-            </div>                                                                   
-        </div>
+
     </div>
 </asp:Content>
 

@@ -34,30 +34,29 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
     <div id="top" style="font-weight:bold;color:Black;">Search Term: <span id="myAddress"></span></div>
     <div id="fleft">
-        <asp:ListView ID="ListView1" runat="server" DataKeyNames="OBJECTID" 
+        <asp:ListView ID="ListView1" runat="server" DataKeyNames="SiteId" 
             DataSourceID="ObjectDataSource1">           
             <AlternatingItemTemplate>
-                <tr style="background-color:#FFF8DC;height:40px;" id='<%# Eval("OBJECTID")%>'>
+                <tr style="background-color:#FFF8DC; height:40px;" id='<%# Eval("SiteId")%>'">
                     <td style="display:none">
-                        <span class="ids"><asp:Label ID="OBJECTIDLabel" runat="server" Text='<%# Eval("OBJECTID")%>' /></span>                         
+                        <span class="ids"><asp:Label ID="OBJECTIDLabel" runat="server" Text='<%# Eval("SiteId") %>' /></span>
                     </td>
                     <td>
-                        <a href='AECAMSearchDetail.aspx?searchArea=<%# dataset%>&currentFilter=<%# Eval("OBJECTID")%>'><span class="pin_names"><asp:Label ID="NameLabel" runat="server" Text='<%# Eval("Name") %>' /></span></a>
+                        <a href='AECAMSearchDetail.aspx?searchArea=<%# dataset %>&currentFilter=<%# Eval("SiteId")%>'><span class="pin_names">
+                        <asp:Label ID="NameLabel" runat="server" Text='<%# Eval("SiteName") %>' />
+                        </span></a>
                     </td>
-                    <td><span class="pin_addresses"><asp:Label ID="AddressLabel" runat="server" Text='<%# Eval("ARC_Addres") %>' />,                
-                        <asp:Label ID="City_1Label" runat="server" Text='<%# Eval("ARC_City") %>' />, AR                 
-                        <asp:Label ID="Zip_1Label" runat="server" Text='<%# Eval("ARC_Zip") %>' /></span>
+                    <td>
+                        <span class="pin_addresses"><asp:Label ID="AddressLabel" runat="server" Text='<%# Eval("Address") %>' />,                
+                        <asp:Label ID="City_1Label" runat="server" Text='<%# Eval("City") %>' />, 
+                        <asp:Label ID="State_1Label" runat="server" Text='<%# Eval("State") %>' />,                
+                        <asp:Label ID="Zip_1Label" runat="server" Text='<%# Eval("Zip") %>' /></span> 
                     </td>    
                     <td>
-                        <asp:Label ID="FacilityTyLabel" runat="server" 
-                            Text='<%# Eval("FacilityTy") %>' />
+                        <asp:Label ID="AgencyNameLabel" runat="server" 
+                            Text='<%# Eval("AgencyName") %>' />
                     </td>
-                    <td style="display:none">
-                        <asp:Label ID="XLabel" runat="server" Text='<%# Eval("X") %>' CssClass="LAT" />
-                    </td>
-                    <td style="display:none">
-                        <asp:Label ID="YLabel" runat="server" Text='<%# Eval("Y") %>' cssClass="LONG"/>
-                    </td>
+                   
                 </tr>
             </AlternatingItemTemplate>
             <EmptyDataTemplate>
@@ -66,32 +65,31 @@
                     <tr>
                         <td>
                             No data was returned.</td>
-                        <td><a href='AECAMSearch.aspx'>Return to search</a></td>
                     </tr>
                 </table>
             </EmptyDataTemplate>
             <ItemTemplate>
-                <tr style="background-color:#DCDCDC;color: #000000;height:40px;" id='<%# Eval("OBJECTID")%>'>
+                <tr style="background-color:#DCDCDC;color: #000000;height:40px;" id='<%# Eval("SiteId")%>'">
                      <td style="display:none">
-                        <span class="ids"><asp:Label ID="OBJECTIDLabel" runat="server" Text='<%# Eval("OBJECTID")%>' /></span>
+                         <span class="ids"><asp:Label ID="OBJECTIDLabel" runat="server" Text='<%# Eval("SiteId") %>' /></span>
                     </td>
                     <td>
-                        <a href='AECAMSearchDetail.aspx?searchArea=<%# dataset%>&currentFilter=<%# Eval("OBJECTID")%>'><span class="pin_names"><asp:Label ID="NameLabel" runat="server" Text='<%# Eval("Name") %>' /></span></a>
+                        <a href='AECAMSearchDetail.aspx?searchArea=<%# dataset %>&currentFilter=<%# Eval("SiteId")%>'><span class="pin_names">
+                        <asp:Label ID="NameLabel" runat="server" Text='<%# Eval("SiteName") %>' />
+                        </span></a>
+                        
                     </td>
-                    <td><span class="pin_addresses"><asp:Label ID="AddressLabel" runat="server" Text='<%# Eval("ARC_Addres") %>' />,                
-                        <asp:Label ID="City_1Label" runat="server" Text='<%# Eval("ARC_City") %>' />, AR                 
-                        <asp:Label ID="Zip_1Label" runat="server" Text='<%# Eval("ARC_Zip") %>' /></span>
+                    <td>
+                        <span class="pin_addresses"><asp:Label ID="AddressLabel" runat="server" Text='<%# Eval("Address") %>' />,                
+                        <asp:Label ID="City_1Label" runat="server" Text='<%# Eval("City") %>' />, 
+                        <asp:Label ID="State_1Label" runat="server" Text='<%# Eval("State") %>' />,                
+                        <asp:Label ID="Zip_1Label" runat="server" Text='<%# Eval("Zip") %>' /></span>   
                     </td>                   
-                    <td>
-                        <asp:Label ID="FacilityTyLabel" runat="server" 
-                            Text='<%# Eval("FacilityTy") %>' />
-                    </td>
-                    <td style="display:none">
-                        <asp:Label ID="XLabel" runat="server" Text='<%# Eval("X") %>' CssClass="LAT" />
-                    </td>
-                    <td style="display:none">
-                        <asp:Label ID="YLabel" runat="server" Text='<%# Eval("Y") %>' cssClass="LONG"/>
-                    </td>
+                     <td>
+                         <asp:Label ID="AgencyNameLabel" runat="server" 
+                             Text='<%# Eval("AgencyName") %>' />
+                     </td>
+                      
                 </tr>
             </ItemTemplate>
             <LayoutTemplate>
@@ -100,22 +98,22 @@
                         <td runat="server">
                             <table ID="itemPlaceholderContainer" runat="server" border="1" 
                                 style="background-color: #FFFFFF;border-collapse: collapse;border-color: #999999;border-style:none;border-width:1px;font-family: Verdana, Arial, Helvetica, sans-serif;">
-                                <tr runat="server" style="background-color:#DCDCDC;color: #000000;">
+                                <tr runat="server" style="background-color: #DCDCDC; color: #000000;">
                                     <th id="Th4" runat="server" style="display:none">
-                                        ID</th>
+                                        SiteId</th>
                                     <th><asp:LinkButton ID="LinkButton1" runat="server" CommandName="Sort"
-                                        CommandArgument="Name" Text="Name" /></th>
+                                        CommandArgument="SiteName" Text="SiteName" /></th>
                                     <th runat="server">
-                                        Address</th> 
-                                    <th id="Th3" runat="server">                                       
-                                        Facility Type</th>    
+                                        Address</th>
+                                    <th id="Th3" runat="server">
+                                        AgencyName</th>
                                     <th id="Th1" runat="server" style="display:none">
                                         X</th>
                                     <th id="Th2" runat="server" style="display:none">
                                         Y</th>
-                                </tr>                                      
-                                <tr ID="itemPlaceholder" runat="server">
                                 </tr>
+                                <tr runat="server" ID="itemPlaceholder">
+                                </tr>                                      
                             </table>
                         </td>
                     </tr>
@@ -123,7 +121,7 @@
                         <td runat="server" 
                             style="text-align: center;background-color: #CCCCCC;font-family: Verdana, Arial, Helvetica, sans-serif;color: #000000;">
                             <asp:DataPager ID="DataPager1" runat="server" PageSize="15">
-                            <Fields>
+                             <Fields>
                               <asp:TemplatePagerField>              
                                 <PagerTemplate>
                                 <b>
@@ -159,7 +157,6 @@
                                 ShowNextPageButton="false"
                                 ShowPreviousPageButton="false" />
                             </Fields>
-                                
                             </asp:DataPager>
                         </td>
                     </tr>
@@ -167,12 +164,8 @@
             </LayoutTemplate>
         </asp:ListView>
         <asp:ObjectDataSource ID="ObjectDataSource1" runat="server" 
-            OldValuesParameterFormatString="original_{0}" SelectMethod="" 
-            TypeName="DHSDataSetTableAdapters.ABCTableAdapter">
-            <SelectParameters>
-                <asp:QueryStringParameter Name="ZIP" QueryStringField="currentFilter" 
-                    Type="String" />
-            </SelectParameters>
+            OldValuesParameterFormatString="original_{0}" SelectMethod="GetData" 
+            TypeName="DHSDataSetTableAdapters.ABCSitesTableAdapter">
         </asp:ObjectDataSource>
         Source: DHS Child Care Licensing Data
     </div>

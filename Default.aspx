@@ -27,7 +27,7 @@
 						        <p class="text_main"><strong>Map Search</strong></p>
 						        <p class="text_main">Our <a href="aecam_0.html">map based searches</a> cover Head Start, Childcare Facilities, Arkansas Better Chance Facilities, and Special Nutrition Programs using the latest in Geographic Information Systems technology.</p>
 						        <p class="text_main"><strong>Community Resources</strong></p>
-						        <p class="text_main">Our <a target="_blank" href="AECAMSearch.aspx">Community Resources Guide</a> provides a directory to many early childhood service providers throughout the state; with search options that include keywords, county of locations, services provided, and Professional categories based on the <a target="_blank" href="http://www.strengtheningfamilies.net/index.php">Strengthening Families Protective Factors Framework</a>.  The data itself is maintained by the <a target="_blank" href="http://www.tipsforgreatkids.com/">TIPS for Great Kids</a> team.</p>
+						        <p class="text_main">Our <a target="_blank" href="AECAMSearch.aspx">Community Resources Guide</a> provides a directory to many early childhood service providers throughout the state; with search options that include keywords, county of locations, services provided, and Professional categories based on the <a target="_blank" href="http://www.strengtheningfamilies.net/index.php">Strengthening Families Protective Factors Framework</a>.  The data itself is maintained by UAMS Department of Family and Preventive Medicine.</p>
                                 <p class="text_main"><strong>Year by year statistical data on children in Arkansas</strong></p>
 						        <p class="text_main">This publication is a comprehensive set of school readiness indicators to inform public policy for young children and their families.  The following links are to the publications in PDF format: </p>
                                 <div class="bts">
@@ -37,8 +37,10 @@
                                     <li class="bts"><a target="_blank" title="Getting Ready for School 2009" class="tooltip"  href="Content/grfs/Getting Ready For School 2009.pdf"><img src="Content/images/grfs2009.png" /></a></li>
                                     <li class="bts"><a target="_blank" title="Getting Ready for School 2010" class="tooltip"  href="Content/grfs/Getting Ready For School 2010.pdf"><img src="Content/images/grfs2010.png" /></a></li>
                                     <li class="bts"><a target="_blank" title="Getting Ready for School 2011" class="tooltip"  href="Content/grfs/Getting Ready For School 2011.pdf"><img src="Content/images/grfs2011.png" /></a></li>
-                                    <li class="bts"><a target="_blank" title="Getting Ready for School 2012" class="tooltip"  href="http://iea.ualr.edu/images/stories/IEA-pubs/2012/12-02_Getting_Ready_For_School_2012.pdf"><img src="Content/images/grfs2012.png" /></a></li>
-                                    <li class="bts"><a target="_blank" title="Getting Ready for School 2013" class="tooltip"  href="http://iea.ualr.edu/images/stories/IEA-pubs/2013/13_06_Getting_Ready_For_School_2013.pdf"><img src="Content/images/grfs2013.png" /></a></li>
+                                    <li class="bts"><a target="_blank" title="Getting Ready for School 2012" class="tooltip"  href="//iea.ualr.edu/images/stories/IEA-pubs/2012/12-02_Getting_Ready_For_School_2012.pdf"><img src="Content/images/grfs2012.png" /></a></li>
+                                    <li class="bts"><a target="_blank" title="Getting Ready for School 2013" class="tooltip"  href="//iea.ualr.edu/images/stories/IEA-pubs/2013/13_06_Getting_Ready_For_School_2013.pdf"><img src="Content/images/grfs2013.png" /></a></li>
+                                    <li class="bts"><a target="_blank" title="Getting Ready for School 2014" class="tooltip"  href="//iea.ualr.edu/images/stories/IEA-pubs/2014/06_14_Getting_Ready_For_School_2014.pdf"><img src="Content/images/grfs2014.png" /></a></li>
+                                    <li class="bts"><a target="_blank" title="Getting Ready for School 2015" class="tooltip"  href="Content/grfs/Getting Ready For School 2015.pdf"><img src="Content/images/grfs2015.png" /></a></li>
                                   </ul>
                                 </div>							    					   
 						    </td>

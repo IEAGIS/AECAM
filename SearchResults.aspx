@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="" Language="C#" Debug="true" MasterPageFile="~/DHS.master" AutoEventWireup="true" CodeFile="SearchResults.aspx.cs" Inherits="SearchResults" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 
-    <script type="text/javascript"src="http://maps.google.com/maps/api/js?sensor=false"></script>
+    <script type="text/javascript"src="//maps.google.com/maps/api/js?sensor=false"></script>
     <script type="text/javascript" src="Scripts/utils.js"></script>
     <script src="Scripts/searchResults.js" type="text/javascript"></script>
     <script src="Scripts/searchFilter.js" type="text/javascript"></script>
@@ -310,7 +310,7 @@
                 <asp:Parameter DefaultValue="0.00" Name="Radius" Type="Double" />
             </SelectParameters>
         </asp:ObjectDataSource>
-        Source: UAMS Family and Preventive Medicine / TIPS for Great Kids Program
+        Source: UAMS Family and Preventive Medicine
 </div>
 <div id="map_canvas"></div>
     <br />

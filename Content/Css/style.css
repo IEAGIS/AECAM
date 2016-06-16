@@ -13,12 +13,12 @@ body {
 }
 
 .bg_pg2 {
-	background-image: url(../../Content/images/bg_Div_02.jpg);
+	background-image: url(../../Content/images/bg_Div_03.png);
 	background-repeat: repeat-x;
 }
 
 .text_main {
-	font-family: Calibri, "Trebuchet MS", Arial, sans-serif;
+	font-family: Tahoma,Arial,Helvetica,sans-serif;
 	font-size: 18px;
 	line-height: 22px;
 	color: #000000;
@@ -30,7 +30,7 @@ body {
 }
 
 .text_title {
-	font-family: Calibri, "Trebuchet MS", Arial, sans-serif;
+	ont-family: Tahoma,Arial,Helvetica,sans-serif;
 	font-size: 30px;
 	line-height: 34px;
 	color: #000000;
@@ -38,7 +38,7 @@ body {
 	margin-bottom: 1px;
 }
 .text_title2 {
-	font-family: Calibri, "Trebuchet MS", Arial, sans-serif;
+	ont-family: Tahoma,Arial,Helvetica,sans-serif;
 	font-size: 20px;
 	line-height: 24px;
 	color: #DE210B;
@@ -47,7 +47,7 @@ body {
 }
 
 .footer {
-	font-family: Calibri, "Trebuchet MS", Arial, sans-serif;
+	ont-family: Tahoma,Arial,Helvetica,sans-serif;
 	font-size: 16px;
 	line-height: 20px;
 	color: #000000;
@@ -206,7 +206,7 @@ table.header td a
 {
     text-decoration:none;
     font-size:x-large;
-    font-family: "Trebuchet MS", Verdana, Helvetica, Sans-Serif;
+    font-family: Tahoma,Arial,Helvetica,sans-serif;
     color: White;
     text-shadow: black 0.1em 0.1em 0.2em;
 }
@@ -366,3 +366,5 @@ legend {
   font-size:90%;
   font-weight:bold;
   }
+  
+    .hoverClass { cursor: move; }
